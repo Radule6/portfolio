@@ -1,16 +1,10 @@
-import './App.css'
-
+import Hero from './components/Hero/Hero'
+import Navigation from './components/Navigation/Navigation'
 function App() {
   return (
-    <div style={{ 
-      minHeight: '100vh', 
-      display: 'flex', 
-      alignItems: 'center', 
-      justifyContent: 'center', 
-      fontSize: '2rem', 
-      fontFamily: 'sans-serif' 
-    }}>
-      Currently under construction
+    <div>
+      <Navigation />
+      <Hero />
     </div>
   )
 }
