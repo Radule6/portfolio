@@ -1,110 +1,160 @@
-// src/components/Navigation/Navigation.tsx
+import React, { useState, useEffect, useCallback } from "react";
+import { FiArrowUpRight, FiMenu, FiX } from "react-icons/fi";
 
-import React, { useState } from "react";
-import { BiArrowToRight } from "react-icons/bi";
-import { FiMenu, FiX } from "react-icons/fi";
-
+// Hoisted outside component — static data (rendering-hoist-jsx)
 const navLinks = [
-  { name: "Home", href: "/" },
-  { name: "About", href: "/about" },
-  { name: "Portfolio", href: "/portfolio" },
-  { name: "Blog", href: "/blog" },
-];
+  { name: "Home", href: "#home" },
+  { name: "About", href: "#about" },
+  { name: "Projects", href: "#projects" },
+] as const;
+
+const SCROLL_THRESHOLD = 50;
 
 const Navigation: React.FC = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > SCROLL_THRESHOLD);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Lock body scroll when menu is open
+  useEffect(() => {
+    document.body.style.overflow = mobileOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileOpen]);
+
+  // Close on Escape key — only attach when menu is open (rerender-dependencies)
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [mobileOpen]);
+
+  const closeMenu = useCallback(() => setMobileOpen(false), []);
 
   return (
-    <header>
-      <nav
-        className="sticky top-0 w-full flex items-center justify-between px-10 py-6 backdrop-blur rounded-b-4xl bg-nav-background z-50"
-        aria-label="Main navigation"
-      >
-        {/* Logo */}
-        <a href="/" className="flex items-center gap-2 z-100" aria-label="Go to homepage">
-          <span className="font-extrabold text-2xl md:text-4xl lg:text-5xl tracking-wide text-black font-display">
-            RADULE.DEV
-          </span>
-        </a>
-
-        {/* Desktop Navigation Links */}
-        <ul className="hidden md:flex items-center gap-6 md:gap-8 font-display font-medium">
-          {navLinks.map((link) => (
-            <li key={link.name}>
-              <a
-                href={link.href}
-                className="relative group text-base md:text-lg lg:text-xl font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 transition"
-              >
-                <span className="block transition-opacity duration-500 group-hover:opacity-0">
-                  {link.name}
-                </span>
-                <span className="gradient-text absolute inset-0 pointer-events-none opacity-0 transition-opacity duration-500 group-hover:opacity-100">
-                  {link.name}
-                </span>
-              </a>
-            </li>
-          ))}
-          <li>
-            <a
-              href="/start-project"
-              className="flex items-center text-base md:text-lg lg:text-xl gap-2 border-2 border-black rounded-full px-3 py-1"
-              role="button"
-              aria-label="Start a new project"
-            >
-              <BiArrowToRight
-                className="align-middle relative -bottom-[1px]"
-                aria-hidden="true"
-              />
-              Start Project
-            </a>
-          </li>
-        </ul>
-
-        {/* Hamburger Menu Button (Mobile) */}
-        <button
-          className="md:hidden p-2 z-100"
-          aria-label={mobileOpen ? "Close menu" : "Open menu"}
-          onClick={() => setMobileOpen(!mobileOpen)}
+    <>
+      {/* ─── Top bar ─── */}
+      <header className="fixed top-0 left-0 right-0 z-50">
+        <nav
+          className={`flex items-center justify-between px-6 sm:px-10 lg:px-16 py-4 sm:py-5 transition-all duration-500 ${
+            scrolled && !mobileOpen
+              ? "bg-nav-background backdrop-blur-xl border-b border-border"
+              : "bg-transparent"
+          }`}
+          aria-label="Main navigation"
         >
-          {mobileOpen ? <FiX size={32} /> : <FiMenu size={32} />}
-        </button>
-        
+          {/* Logo */}
+          <a href="#home" className="relative z-[70]" aria-label="Go to homepage">
+            <span className="font-display font-800 text-xl sm:text-2xl lg:text-3xl tracking-tight text-text-primary">
+              RADULE
+              <span className="gradient-text">.DEV</span>
+            </span>
+          </a>
 
-        {/* Mobile Fullscreen Menu Overlay */}
-        {mobileOpen && (
-          <div className="fixed inset-0 z-50 bg-white flex flex-col items-center justify-center h-screen font-display">
-            <ul className="flex flex-col gap-8 items-center">
-              {navLinks.map((link) => (
-                <li key={link.name}>
-                  <a
-                    href={link.href}
-                    onClick={() => setMobileOpen(false)}
-                    className="text-black text-4xl"
-                  >
-                    {link.name}
-                  </a>
-                </li>
-              ))}
-              <li>
+          {/* Desktop links */}
+          <ul className="hidden md:flex items-center gap-8 lg:gap-10">
+            {navLinks.map((link) => (
+              <li key={link.name}>
                 <a
-                  href="/start-project"
-                  onClick={() => setMobileOpen(false)}
-                  className="flex items-center gap-2 text-black text-4xl border-2 border-black rounded-full px-4 py-2"
-                  role="button"
-                  aria-label="Start a new project"
+                  href={link.href}
+                  className="relative group font-body text-sm lg:text-base font-500 tracking-wide uppercase text-text-secondary hover:text-text-primary transition-colors duration-300"
                 >
-                  <BiArrowToRight
-                    className="align-middle relative -bottom-[1px]"
-                    aria-hidden="true"
-                  />
-                  Start Project
+                  {link.name}
+                  <span className="absolute -bottom-1 left-0 h-px w-0 group-hover:w-full bg-accent-lime transition-all duration-300" aria-hidden="true" />
                 </a>
               </li>
-            </ul>
-          </div>
-        )}
-      </nav>
-    </header>
+            ))}
+            <li>
+              <a
+                href="#contact"
+                className="group flex items-center gap-2 font-body text-sm lg:text-base font-500 tracking-wide px-5 py-2 rounded-full border border-border hover:border-accent-lime text-text-primary hover:text-accent-lime transition-all duration-300"
+                role="button"
+                aria-label="Start a new project"
+              >
+                Start Project
+                <FiArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200" aria-hidden="true" />
+              </a>
+            </li>
+          </ul>
+
+          {/* Spacer so desktop layout isn't affected */}
+          <div className="md:hidden w-10" aria-hidden="true" />
+        </nav>
+      </header>
+
+      {/* ─── Hamburger button (own stacking context, above overlay) ─── */}
+      <button
+        className="md:hidden fixed top-4 right-6 sm:right-10 z-[70] p-2 text-text-primary"
+        aria-label={mobileOpen ? "Close menu" : "Open menu"}
+        aria-expanded={mobileOpen}
+        onClick={() => setMobileOpen((prev) => !prev)}
+      >
+        {mobileOpen ? <FiX size={24} /> : <FiMenu size={24} />}
+      </button>
+
+      {/* ─── Mobile fullscreen overlay (sibling, not nested) ─── */}
+      <div
+        className={`fixed inset-0 z-[60] bg-surface md:hidden transition-opacity duration-400 ${
+          mobileOpen
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none"
+        }`}
+        aria-hidden={!mobileOpen}
+      >
+        <div className="flex flex-col items-center justify-center h-full px-6">
+          <ul className="flex flex-col items-center gap-8" role="menu">
+            {navLinks.map((link, i) => (
+              <li
+                key={link.name}
+                role="none"
+                style={{
+                  opacity: mobileOpen ? 1 : 0,
+                  transform: mobileOpen ? "translateY(0)" : "translateY(24px)",
+                  transition: `opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1) ${0.15 + i * 0.06}s, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1) ${0.15 + i * 0.06}s`,
+                }}
+              >
+                <a
+                  href={link.href}
+                  role="menuitem"
+                  onClick={closeMenu}
+                  className="font-display text-4xl sm:text-5xl font-800 text-text-primary tracking-tight hover:text-accent-lime transition-colors duration-200 uppercase"
+                >
+                  {link.name}
+                </a>
+              </li>
+            ))}
+            <li
+              role="none"
+              style={{
+                opacity: mobileOpen ? 1 : 0,
+                transform: mobileOpen ? "translateY(0)" : "translateY(24px)",
+                transition: `opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.4s, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.4s`,
+              }}
+            >
+              <a
+                href="#contact"
+                role="menuitem"
+                onClick={closeMenu}
+                className="inline-flex items-center gap-2 font-body text-lg font-500 px-6 py-3 rounded-full border border-border text-text-primary hover:border-accent-lime hover:text-accent-lime transition-all duration-300"
+                aria-label="Start a new project"
+              >
+                Start Project
+                <FiArrowUpRight className="w-5 h-5" aria-hidden="true" />
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </>
   );
 };
 

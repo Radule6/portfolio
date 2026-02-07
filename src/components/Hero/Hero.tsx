@@ -1,60 +1,161 @@
-import React from "react";
-import heroImage from "../../assets/hero.svg";
-import { FaInstagram, FaFacebook, FaLinkedin } from "react-icons/fa";
-import { BiCalendar } from "react-icons/bi";
-import { FaXTwitter } from "react-icons/fa6";
+import React, { useEffect, useRef, useState } from "react";
+import { FiArrowDown } from "react-icons/fi";
 
-const Hero: React.FC = () => (
-  <section className=" flex min-h-screen bg-white overflow-hidden px-4">
-    <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
-      <img
-        src={heroImage}
-        alt="Hero background"
-        className="
-          w-full h-full
-          object-cover
-          scale-225 sm:scale-100
-          transition-transform duration-300
-        "
+const LERP_FACTOR = 0.04;
+const FADE_DISTANCE = 600;
+const PARALLAX_FACTOR = 0.25;
+
+const Hero: React.FC = () => {
+  const sectionRef = useRef<HTMLElement>(null);
+  const orbRef = useRef<HTMLDivElement>(null);
+  const [scrollY, setScrollY] = useState(0);
+  const mousePos = useRef({ x: 0.5, y: 0.5 });
+  const orbPos = useRef({ x: 0.5, y: 0.5 });
+  const rafId = useRef<number>(0);
+
+  // Scroll tracking
+  useEffect(() => {
+    const onScroll = () => setScrollY(window.scrollY);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Smooth mouse-following orb with lerp — handler stored in ref to avoid
+  // re-attaching the listener on every render (advanced-event-handler-refs)
+  const handleMouseMoveRef = useRef((e: MouseEvent) => {
+    const rect = sectionRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    mousePos.current = {
+      x: (e.clientX - rect.left) / rect.width,
+      y: (e.clientY - rect.top) / rect.height,
+    };
+  });
+
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const handler = handleMouseMoveRef.current;
+    el.addEventListener("mousemove", handler);
+
+    const animate = () => {
+      orbPos.current.x += (mousePos.current.x - orbPos.current.x) * LERP_FACTOR;
+      orbPos.current.y += (mousePos.current.y - orbPos.current.y) * LERP_FACTOR;
+
+      if (orbRef.current) {
+        orbRef.current.style.transform = `translate(${orbPos.current.x * 100 - 50}%, ${orbPos.current.y * 100 - 50}%)`;
+      }
+      rafId.current = requestAnimationFrame(animate);
+    };
+    rafId.current = requestAnimationFrame(animate);
+
+    return () => {
+      el.removeEventListener("mousemove", handler);
+      cancelAnimationFrame(rafId.current);
+    };
+  }, []);
+
+  const scrollFade = Math.max(0, 1 - scrollY / FADE_DISTANCE);
+  const scrollPush = scrollY * PARALLAX_FACTOR;
+
+  return (
+    <section
+      id="home"
+      ref={sectionRef}
+      className="hero-section relative min-h-screen flex flex-col overflow-hidden bg-surface"
+      aria-label="Hero introduction"
+    >
+      {/* ═══ Noise texture overlay ═══ */}
+      <div className="hero-noise absolute inset-0 pointer-events-none z-[2]" aria-hidden="true" />
+
+      {/* ═══ Grid lines background ═══ */}
+      <div className="hero-grid absolute inset-0 pointer-events-none" aria-hidden="true" />
+
+      {/* ═══ Cursor-following gradient orb ═══ */}
+      <div
+        ref={orbRef}
+        className="hero-orb absolute pointer-events-none z-[1]"
+        style={{ left: "50%", top: "50%" }}
+        aria-hidden="true"
       />
-    </div>
 
-    <div className="flex absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-10 flex-col items-center gap-4 2xl:gap-6 text-black">
-      <div className="rotate-270 text-xs sm:text-sm font-medium tracking-wide"></div>
-      <FaXTwitter className="w-5 h-5 2xl:w-8 3xl:h-8 hover:opacity-70 transition" />
-      <FaLinkedin className="w-5 h-5 2xl:w-8 3xl:h-8 hover:opacity-70 transition" />
-      <FaFacebook className="w-5 h-5 2xl:w-8 3xl:h-8 hover:opacity-70 transition" />
-      <FaInstagram className="w-5 h-5 2xl:w-8 3xl:h-8 hover:opacity-70 transition" />
-      <div className="w-px h-8 sm:h-12 bg-black opacity-30 mt-2" />
-    </div>
-
-  
-    <div className="relative z-10 w-full flex flex-col items-start justify-start sm:justify-center mt-30 sm:mt-0 px-0 sm:px-6 sm:ml-14 py-10 sm:py-16 ml-10 ">
-      <h1 className="text-4xl xs:text-5xl sm:text-6xl md:text-6xl lg:text-7xl xl:text-8xl 3xl:text-9xl font-extrabold text-black leading-normal">
-        <span className="sm:mr-2">SEO-Focused</span>
-        <br className="block lg:hidden" />
-        <span className="bg-black text-white px-2 sm:px-4 py-1 rounded-xl">Developer</span>
-        <br className="" />
-        <span className="sm:mr-1">High-Performance</span>
-        <br className="block" />
-        <span className="bg-black text-white px-2 sm:px-4 py-1 rounded-xl">Websites</span>
-      </h1>
-
-      <p className="mt-4 sm:mt-6 text-base sm:text-lg text-gray-700 max-w-full sm:max-w-xl">
-  I create fast, SEO-friendly websites that look great and help you grow online.
-  Strong performance, and Google-ready from day one.
-</p>
-
-
-      <a
-        href="/contact"
-        className="mt-6 sm:mt-8 inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 border border-black text-black font-medium rounded-full hover:bg-black hover:text-white transition text-sm sm:text-base"
+      {/* ═══ Content container ═══ */}
+      <div
+        className="relative z-10 w-full flex-1"
+        style={{
+          opacity: scrollFade,
+          transform: `translateY(${-scrollPush}px)`,
+        }}
       >
-        <BiCalendar className="w-5 h-5 mr-2" />
-        Schedule a Call
-      </a>
-    </div>
-  </section>
-);
+        {/* ─── Centered hero content ─── */}
+        <div className="flex flex-col items-center justify-center min-h-screen px-6 sm:px-10 lg:px-16">
+          <div className="max-w-[900px] mx-auto text-center">
+            {/* Name + role label */}
+            <div className="hero-stagger-1 flex items-center justify-center gap-3 mb-8 sm:mb-10">
+              <div className="h-px w-8 sm:w-12 bg-accent-lime/40" aria-hidden="true" />
+              <span className="font-body text-xs sm:text-sm tracking-[0.3em] uppercase text-text-secondary">
+                Marko Radulovic &mdash; Full-Stack Engineer &middot; Zagreb, Croatia
+              </span>
+              <div className="h-px w-8 sm:w-12 bg-accent-lime/40" aria-hidden="true" />
+            </div>
+
+            {/* Main headline */}
+            <h1 className="hero-stagger-4 font-display text-[11vw] sm:text-[7.5vw] lg:text-[5vw] font-800 leading-[1.05] tracking-[-0.03em] text-text-primary mb-6 sm:mb-8">
+              I build{" "}
+              <span className="gradient-text">AI&#8209;powered</span>{" "}
+              web applications
+            </h1>
+
+            {/* Description */}
+            <p className="hero-stagger-5 font-body text-base sm:text-lg lg:text-xl text-text-secondary leading-relaxed max-w-2xl mx-auto mb-10 sm:mb-14">
+              Full-stack engineer specializing in RAG systems, agentic AI, and data-driven products — from React frontends to Python backends and AWS infrastructure.
+            </p>
+
+            {/* CTAs */}
+            <div className="hero-stagger-6 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 mb-8 sm:mb-10">
+              <a
+                href="#contact"
+                className="group inline-flex items-center gap-2.5 font-body text-sm sm:text-base font-500 tracking-wide gradient-bg text-surface rounded-full px-7 py-3 hover:opacity-90 transition-opacity duration-300"
+              >
+                Let's work together
+                <span className="w-1.5 h-1.5 rounded-full bg-surface/30" aria-hidden="true" />
+              </a>
+              <a
+                href="#projects"
+                className="group inline-flex items-center gap-2.5 font-body text-sm sm:text-base font-500 tracking-wide text-text-primary border border-border rounded-full px-7 py-3 hover:border-accent-lime hover:text-accent-lime transition-all duration-300"
+              >
+                View projects
+              </a>
+            </div>
+
+            {/* Availability badge */}
+            <div className="hero-stagger-6 flex items-center justify-center gap-2.5">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full rounded-full bg-accent-green opacity-60 animate-ping" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-accent-green" />
+              </span>
+              <span className="font-body text-xs sm:text-sm tracking-[0.15em] uppercase text-text-secondary">
+                Available for projects
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* ─── Scroll indicator ─── */}
+        <div className="absolute bottom-20 left-1/2 -translate-x-1/2 hero-stagger-6">
+          <a
+            href="#projects"
+            className="group flex flex-col items-center gap-2"
+            aria-label="Scroll to projects"
+          >
+            <div className="hero-scroll-arrow w-10 h-10 rounded-full border border-border group-hover:border-accent-lime flex items-center justify-center transition-all duration-300">
+              <FiArrowDown className="w-4 h-4 text-text-muted group-hover:text-accent-lime transition-colors duration-300" />
+            </div>
+          </a>
+        </div>
+
+      </div>
+    </section>
+  );
+};
 
 export default Hero;
