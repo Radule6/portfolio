@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { FiArrowUpRight, FiMenu, FiX } from "react-icons/fi";
 
 // Hoisted outside component — static data (rendering-hoist-jsx)
@@ -13,18 +13,30 @@ const SCROLL_THRESHOLD = 50;
 const Navigation: React.FC = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const scrollRaf = useRef<number | null>(null);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > SCROLL_THRESHOLD);
+    const onScroll = () => {
+      if (scrollRaf.current != null) return;
+      scrollRaf.current = requestAnimationFrame(() => {
+        setScrolled(window.scrollY > SCROLL_THRESHOLD);
+        scrollRaf.current = null;
+      });
+    };
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    onScroll();
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (scrollRaf.current != null) cancelAnimationFrame(scrollRaf.current);
+    };
   }, []);
 
   // Lock body scroll when menu is open
   useEffect(() => {
-    document.body.style.overflow = mobileOpen ? "hidden" : "";
+    const prev = document.body.style.overflow;
+    if (mobileOpen) document.body.style.overflow = "hidden";
     return () => {
-      document.body.style.overflow = "";
+      document.body.style.overflow = prev;
     };
   }, [mobileOpen]);
 
@@ -77,7 +89,6 @@ const Navigation: React.FC = () => {
               <a
                 href="#contact"
                 className="group flex items-center gap-2 font-body text-sm lg:text-base font-500 tracking-wide px-5 py-2 rounded-full border border-border hover:border-accent-lime text-text-primary hover:text-accent-lime transition-all duration-300"
-                role="button"
                 aria-label="Start a new project"
               >
                 Start Project
@@ -110,12 +121,11 @@ const Navigation: React.FC = () => {
         }`}
         aria-hidden={!mobileOpen}
       >
-        <div className="flex flex-col items-center justify-center h-full px-6">
-          <ul className="flex flex-col items-center gap-8" role="menu">
+        <nav aria-label="Mobile navigation" className="flex flex-col items-center justify-center h-full px-6">
+          <ul className="flex flex-col items-center gap-8">
             {navLinks.map((link, i) => (
               <li
                 key={link.name}
-                role="none"
                 style={{
                   opacity: mobileOpen ? 1 : 0,
                   transform: mobileOpen ? "translateY(0)" : "translateY(24px)",
@@ -124,7 +134,6 @@ const Navigation: React.FC = () => {
               >
                 <a
                   href={link.href}
-                  role="menuitem"
                   onClick={closeMenu}
                   className="font-display text-4xl sm:text-5xl font-800 text-text-primary tracking-tight hover:text-accent-lime transition-colors duration-200 uppercase"
                 >
@@ -133,7 +142,6 @@ const Navigation: React.FC = () => {
               </li>
             ))}
             <li
-              role="none"
               style={{
                 opacity: mobileOpen ? 1 : 0,
                 transform: mobileOpen ? "translateY(0)" : "translateY(24px)",
@@ -142,7 +150,6 @@ const Navigation: React.FC = () => {
             >
               <a
                 href="#contact"
-                role="menuitem"
                 onClick={closeMenu}
                 className="inline-flex items-center gap-2 font-body text-lg font-500 px-6 py-3 rounded-full border border-border text-text-primary hover:border-accent-lime hover:text-accent-lime transition-all duration-300"
                 aria-label="Start a new project"
@@ -152,7 +159,7 @@ const Navigation: React.FC = () => {
               </a>
             </li>
           </ul>
-        </div>
+        </nav>
       </div>
     </>
   );

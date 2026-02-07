@@ -66,7 +66,7 @@ const Contact: React.FC = () => {
 
         {/* Headline */}
         <h2
-          className="font-display text-4xl sm:text-6xl lg:text-8xl font-800 tracking-tight text-text-primary leading-[0.95] mb-6 sm:mb-8"
+          className="font-display text-4xl sm:text-6xl lg:text-8xl font-extrabold tracking-tight text-text-primary leading-[0.95] mb-6 sm:mb-8"
           style={stagger(0.1)}
         >
           Let's build

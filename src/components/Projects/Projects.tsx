@@ -65,6 +65,8 @@ const Projects: React.FC = () => {
   const sectionRef = useRef<HTMLElement>(null);
   const [visible, setVisible] = useState(false);
   const [modalProject, setModalProject] = useState<Project | null>(null);
+  const modalCloseRef = useRef<HTMLButtonElement>(null);
+  const returnFocusRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -80,17 +82,21 @@ const Projects: React.FC = () => {
     return () => observer.disconnect();
   }, []);
 
-  // Lock body scroll + close on Escape
+  // Lock body scroll, focus management, close on Escape
   useEffect(() => {
     if (!modalProject) return;
+    returnFocusRef.current = document.activeElement as HTMLElement;
+    const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    requestAnimationFrame(() => modalCloseRef.current?.focus());
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setModalProject(null);
     };
     window.addEventListener("keydown", onKey);
     return () => {
-      document.body.style.overflow = "";
+      document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", onKey);
+      returnFocusRef.current?.focus();
     };
   }, [modalProject]);
 
@@ -372,6 +378,7 @@ const Projects: React.FC = () => {
           <div className="relative z-10 w-full max-w-5xl">
             {/* Close button */}
             <button
+              ref={modalCloseRef}
               type="button"
               onClick={closeModal}
               className="absolute -top-12 right-0 p-2 text-text-muted hover:text-text-primary transition-colors duration-200"
