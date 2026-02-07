@@ -14,6 +14,8 @@ const Navigation: React.FC = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const scrollRaf = useRef<number | null>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const firstLinkRef = useRef<HTMLAnchorElement>(null);
 
   useEffect(() => {
     const onScroll = () => {
@@ -40,11 +42,39 @@ const Navigation: React.FC = () => {
     };
   }, [mobileOpen]);
 
-  // Close on Escape key — only attach when menu is open (rerender-dependencies)
+  // Focus management: move focus into overlay on open, restore on close
+  useEffect(() => {
+    if (mobileOpen && firstLinkRef.current) {
+      firstLinkRef.current.focus();
+    } else if (!mobileOpen && menuButtonRef.current) {
+      menuButtonRef.current.focus();
+    }
+  }, [mobileOpen]);
+
+  // Close on Escape + focus trap when menu is open
   useEffect(() => {
     if (!mobileOpen) return;
+    const overlay = document.getElementById("mobile-nav-overlay");
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setMobileOpen(false);
+      if (e.key === "Escape") {
+        setMobileOpen(false);
+        return;
+      }
+      if (e.key === "Tab" && overlay) {
+        const focusable = overlay.querySelectorAll<HTMLElement>(
+          'a[href], button, [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -104,6 +134,8 @@ const Navigation: React.FC = () => {
 
       {/* ─── Hamburger button (own stacking context, above overlay) ─── */}
       <button
+        ref={menuButtonRef}
+        aria-controls="mobile-nav-overlay"
         className="md:hidden fixed top-4 right-6 sm:right-10 z-[70] p-2 text-text-primary"
         aria-label={mobileOpen ? "Close menu" : "Open menu"}
         aria-expanded={mobileOpen}
@@ -114,6 +146,10 @@ const Navigation: React.FC = () => {
 
       {/* ─── Mobile fullscreen overlay (sibling, not nested) ─── */}
       <div
+        id="mobile-nav-overlay"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Mobile navigation"
         className={`fixed inset-0 z-[60] bg-surface md:hidden transition-opacity duration-400 ${
           mobileOpen
             ? "opacity-100 pointer-events-auto"
@@ -134,6 +170,7 @@ const Navigation: React.FC = () => {
               >
                 <a
                   href={link.href}
+                  ref={i === 0 ? firstLinkRef : undefined}
                   onClick={closeMenu}
                   className="font-display text-4xl sm:text-5xl font-800 text-text-primary tracking-tight hover:text-accent-lime transition-colors duration-200 uppercase"
                 >
