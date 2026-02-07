@@ -66,7 +66,7 @@ const Contact: React.FC = () => {
 
         {/* Headline */}
         <h2
-          className="font-display text-4xl sm:text-6xl lg:text-8xl font-extrabold tracking-tight text-text-primary leading-[0.95] mb-6 sm:mb-8"
+          className="font-display text-[11vw] sm:text-[7.5vw] lg:text-[5vw] font-800 leading-[1.05] tracking-[-0.03em] text-text-primary mb-6 sm:mb-8"
           style={stagger(0.1)}
         >
           Let's build
@@ -88,7 +88,7 @@ const Contact: React.FC = () => {
         <div style={stagger(0.3)}>
           <a
             href="mailto:hello@radule.dev"
-            className="group inline-flex items-center gap-3 sm:gap-4 font-display text-lg sm:text-xl lg:text-2xl font-semibold text-text-primary border border-border rounded-full px-6 sm:px-8 py-3 sm:py-4 hover:border-accent-lime hover:text-accent-lime transition-all duration-300"
+            className="group inline-flex items-center gap-3 sm:gap-4 font-display text-lg sm:text-xl lg:text-2xl font-600 text-text-primary border border-border rounded-full px-6 sm:px-8 py-3 sm:py-4 hover:border-accent-lime hover:text-accent-lime transition-all duration-300"
           >
             <FiMail className="w-5 h-5 sm:w-6 sm:h-6" />
             hello@radule.dev
