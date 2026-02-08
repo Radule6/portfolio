@@ -52,7 +52,7 @@ const projects: Project[] = [
     description:
       "An all-in-one platform for independent professionals — invoicing, project management, and client workflows in a single place. Built to replace the patchwork of tools freelancers juggle daily.",
     tags: ["Next.js", "Supabase", "Vercel"],
-    color: "#FFFF00",
+    color: "#B7FF03",
     status: "coming-soon" as const,
   },
 ];
@@ -194,8 +194,8 @@ const Projects: React.FC = () => {
                   <div className="flex-1 flex flex-col">
                     {/* Number */}
                     <span
-                      className="font-body text-5xl sm:text-6xl font-800 leading-none mb-4"
-                      style={{ color: project.color, opacity: 0.10, fontVariantNumeric: "lining-nums tabular-nums" }}
+                      className="project-numeral font-body text-5xl sm:text-6xl font-800 leading-none mb-4"
+                      style={{ color: project.color, fontVariantNumeric: "lining-nums tabular-nums" }}
                       aria-hidden="true"
                     >
                       {String(idx + 1).padStart(2, "0")}
@@ -326,8 +326,8 @@ const Projects: React.FC = () => {
 
                   <div className="flex-1 flex flex-col">
                     <span
-                      className="font-body text-5xl sm:text-6xl font-800 leading-none mb-4"
-                      style={{ color: project.color, opacity: 0.10, fontVariantNumeric: "lining-nums tabular-nums" }}
+                      className="project-numeral font-body text-5xl sm:text-6xl font-800 leading-none mb-4"
+                      style={{ color: project.color, fontVariantNumeric: "lining-nums tabular-nums" }}
                       aria-hidden="true"
                     >
                       {String(featured.length + idx + 1).padStart(2, "0")}
@@ -361,7 +361,7 @@ const Projects: React.FC = () => {
                       className="w-12 h-12 rounded-full flex items-center justify-center"
                       style={{ background: `${project.color}10`, border: `1px solid ${project.color}20` }}
                     >
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={project.color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.6 }}>
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={project.color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="project-icon">
                         <path d="M12 2L2 7l10 5 10-5-10-5z" />
                         <path d="M2 17l10 5 10-5" />
                         <path d="M2 12l10 5 10-5" />

@@ -383,3 +383,21 @@ html[data-theme="light"] .hero-orb {
 .contact-submit:active:not(:disabled) {
   transform: scale(0.98);
 }
+
+/* ── Project numerals ── */
+
+.project-numeral {
+  opacity: 0.10;
+}
+
+html[data-theme="light"] .project-numeral {
+  opacity: 0.80;
+}
+
+.project-icon {
+  opacity: 0.6;
+}
+
+html[data-theme="light"] .project-icon {
+  opacity: 1;
+}
