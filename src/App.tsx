@@ -14,16 +14,18 @@ function App() {
   return (
     <>
       {loading && <Preloader onComplete={handlePreloaderComplete} />}
-      <div className="bg-surface min-h-screen">
-        <Navigation />
-        <main>
-          <Hero />
-          <About />
-          <Projects />
-          <Contact />
-        </main>
-        <Footer />
-      </div>
+      {!loading && (
+        <div className="bg-surface min-h-screen">
+          <Navigation />
+          <main>
+            <Hero />
+            <About />
+            <Projects />
+            <Contact />
+          </main>
+          <Footer />
+        </div>
+      )}
     </>
   );
 }

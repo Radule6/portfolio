@@ -15,16 +15,34 @@ const socials = [
 const CopyEmailButton: React.FC = () => {
   const [copied, setCopied] = useState(false);
   const [toast, setToast] = useState(false);
+  const copiedTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
+  const mountedRef = useRef(true);
+
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+      if (copiedTimerRef.current) clearTimeout(copiedTimerRef.current);
+      if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    };
+  }, []);
+
+  const startTimers = useCallback(() => {
+    if (copiedTimerRef.current) clearTimeout(copiedTimerRef.current);
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    copiedTimerRef.current = setTimeout(() => {
+      if (mountedRef.current) setCopied(false);
+    }, 2000);
+    toastTimerRef.current = setTimeout(() => {
+      if (mountedRef.current) setToast(false);
+    }, 2500);
+  }, []);
 
   const handleCopy = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(EMAIL);
-      setCopied(true);
-      setToast(true);
-      setTimeout(() => setCopied(false), 2000);
-      setTimeout(() => setToast(false), 2500);
     } catch {
-      // Fallback for older browsers
       const textarea = document.createElement("textarea");
       textarea.value = EMAIL;
       textarea.style.position = "fixed";
@@ -33,12 +51,12 @@ const CopyEmailButton: React.FC = () => {
       textarea.select();
       document.execCommand("copy");
       document.body.removeChild(textarea);
-      setCopied(true);
-      setToast(true);
-      setTimeout(() => setCopied(false), 2000);
-      setTimeout(() => setToast(false), 2500);
     }
-  }, []);
+    if (!mountedRef.current) return;
+    setCopied(true);
+    setToast(true);
+    startTimers();
+  }, [startTimers]);
 
   return (
     <>
@@ -166,11 +184,11 @@ const Contact: React.FC = () => {
         <div className="flex flex-wrap items-center gap-3" style={stagger(0.3)}>
           <MagneticWrap strength={0.2}>
             <a
-              href="mailto:hello@radule.dev"
+              href={`mailto:${EMAIL}`}
               className="group inline-flex items-center gap-3 sm:gap-4 font-display text-lg sm:text-xl lg:text-2xl font-600 text-text-primary border border-border rounded-full px-6 sm:px-8 py-3 sm:py-4 hover:border-accent-lime hover:text-accent-lime transition-all duration-300"
             >
               <FiMail className="w-5 h-5 sm:w-6 sm:h-6" />
-              hello@radule.dev
+              {EMAIL}
               <FiArrowUpRight className="w-4 h-4 sm:w-5 sm:h-5 opacity-50 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300" />
             </a>
           </MagneticWrap>

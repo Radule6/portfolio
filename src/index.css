@@ -259,16 +259,6 @@ html[data-theme="light"] .hero-noise {
   opacity: 0.5;
 }
 
-html[data-theme="light"] .hero-orb {
-  background: radial-gradient(
-    circle at center,
-    rgba(15, 168, 122, 0.12) 0%,
-    rgba(90, 140, 0, 0.08) 30%,
-    rgba(154, 135, 0, 0.04) 55%,
-    transparent 70%
-  );
-}
-
 /* Cursor-following gradient orb */
 .hero-orb {
   width: clamp(400px, 50vw, 800px);
@@ -283,6 +273,16 @@ html[data-theme="light"] .hero-orb {
   );
   filter: blur(60px);
   will-change: transform;
+}
+
+html[data-theme="light"] .hero-orb {
+  background: radial-gradient(
+    circle at center,
+    rgba(15, 168, 122, 0.12) 0%,
+    rgba(90, 140, 0, 0.08) 30%,
+    rgba(154, 135, 0, 0.04) 55%,
+    transparent 70%
+  );
 }
 
 /* Staggered entrance animations */
