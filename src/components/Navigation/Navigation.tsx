@@ -43,12 +43,10 @@ const Navigation: React.FC = () => {
     };
   }, [mobileOpen]);
 
-  // Focus management: move focus into overlay on open, restore on close
+  // Focus management: move focus into overlay on open
   useEffect(() => {
     if (mobileOpen && firstLinkRef.current) {
       firstLinkRef.current.focus();
-    } else if (!mobileOpen && menuButtonRef.current) {
-      menuButtonRef.current.focus();
     }
   }, [mobileOpen]);
 
