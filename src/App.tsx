@@ -7,8 +7,10 @@ import Contact from "./components/Contact/Contact";
 import Footer from "./components/Footer/Footer";
 import Preloader from "./components/Preloader/Preloader";
 
+const isSSG = typeof window === "undefined";
+
 function App() {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!isSSG);
   const handlePreloaderComplete = useCallback(() => setLoading(false), []);
 
   return (
