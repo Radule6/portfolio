@@ -1,12 +1,108 @@
-import React, { useEffect, useRef, useState } from "react";
-import { FiArrowUpRight, FiMail } from "react-icons/fi";
+import React, { useEffect, useRef, useState, useCallback } from "react";
+import { FiArrowUpRight, FiMail, FiCheck } from "react-icons/fi";
+import { FiCopy } from "react-icons/fi";
 import { FaLinkedin, FaGithub } from "react-icons/fa6";
+import MagneticWrap from "../MagneticWrap/MagneticWrap";
 
 // Hoisted outside component — static data (rendering-hoist-jsx)
+const EMAIL = "hello@radule.dev";
+
 const socials = [
   { name: "GitHub", icon: FaGithub, href: "https://github.com/Radule6" },
   { name: "LinkedIn", icon: FaLinkedin, href: "https://www.linkedin.com/in/marko-radulovic6/" },
 ] as const;
+
+const CopyEmailButton: React.FC = () => {
+  const [copied, setCopied] = useState(false);
+  const [toast, setToast] = useState(false);
+  const copiedTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
+  const mountedRef = useRef(true);
+
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+      if (copiedTimerRef.current) clearTimeout(copiedTimerRef.current);
+      if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    };
+  }, []);
+
+  const startTimers = useCallback(() => {
+    if (copiedTimerRef.current) clearTimeout(copiedTimerRef.current);
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    copiedTimerRef.current = setTimeout(() => {
+      if (mountedRef.current) setCopied(false);
+    }, 2000);
+    toastTimerRef.current = setTimeout(() => {
+      if (mountedRef.current) setToast(false);
+    }, 2500);
+  }, []);
+
+  const handleCopy = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(EMAIL);
+    } catch {
+      const textarea = document.createElement("textarea");
+      textarea.value = EMAIL;
+      textarea.style.position = "fixed";
+      textarea.style.opacity = "0";
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+    }
+    if (!mountedRef.current) return;
+    setCopied(true);
+    setToast(true);
+    startTimers();
+  }, [startTimers]);
+
+  return (
+    <>
+      <button
+        onClick={handleCopy}
+        className={`group flex items-center justify-center w-11 h-11 sm:w-12 sm:h-12 rounded-full border transition-all duration-300 ${
+          copied
+            ? "border-accent-lime text-accent-lime"
+            : "border-border text-text-secondary hover:border-border-hover hover:text-text-primary"
+        }`}
+        aria-label="Copy email to clipboard"
+      >
+        <span className="relative w-5 h-5">
+          <FiCopy
+            className={`absolute inset-0 w-5 h-5 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+              copied ? "opacity-0 scale-75 rotate-12" : "opacity-100 scale-100 rotate-0"
+            }`}
+          />
+          <FiCheck
+            className={`absolute inset-0 w-5 h-5 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+              copied ? "opacity-100 scale-100 rotate-0" : "opacity-0 scale-75 -rotate-12"
+            }`}
+          />
+        </span>
+      </button>
+
+      {/* Toast notification */}
+      <div
+        className={`fixed bottom-8 left-1/2 -translate-x-1/2 z-[90] transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+          toast
+            ? "opacity-100 translate-y-0"
+            : "opacity-0 translate-y-4 pointer-events-none"
+        }`}
+        role="status"
+        aria-live="polite"
+      >
+        <div className="flex items-center gap-2.5 px-5 py-3 rounded-full bg-surface-raised border border-border shadow-lg shadow-black/20 backdrop-blur-sm">
+          <FiCheck className="w-4 h-4 text-accent-lime" />
+          <span className="font-body text-sm text-text-primary">
+            Email copied to clipboard
+          </span>
+        </div>
+      </div>
+    </>
+  );
+};
 
 const Contact: React.FC = () => {
   const sectionRef = useRef<HTMLElement>(null);
@@ -48,7 +144,7 @@ const Contact: React.FC = () => {
       {/* Background glow */}
       <div
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full opacity-[0.03] blur-[160px] pointer-events-none"
-        style={{ background: "radial-gradient(circle, #59FFCE 0%, #B7FF03 40%, transparent 70%)" }}
+        style={{ background: "radial-gradient(circle, var(--gradient-start) 0%, var(--gradient-mid) 40%, transparent 70%)" }}
         aria-hidden="true"
       />
 
@@ -85,15 +181,18 @@ const Contact: React.FC = () => {
         </p>
 
         {/* Email CTA */}
-        <div style={stagger(0.3)}>
-          <a
-            href="mailto:hello@radule.dev"
-            className="group inline-flex items-center gap-3 sm:gap-4 font-display text-lg sm:text-xl lg:text-2xl font-600 text-text-primary border border-border rounded-full px-6 sm:px-8 py-3 sm:py-4 hover:border-accent-lime hover:text-accent-lime transition-all duration-300"
-          >
-            <FiMail className="w-5 h-5 sm:w-6 sm:h-6" />
-            hello@radule.dev
-            <FiArrowUpRight className="w-4 h-4 sm:w-5 sm:h-5 opacity-50 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300" />
-          </a>
+        <div className="flex flex-wrap items-center gap-3" style={stagger(0.3)}>
+          <MagneticWrap strength={0.2}>
+            <a
+              href={`mailto:${EMAIL}`}
+              className="group inline-flex items-center gap-3 sm:gap-4 font-display text-lg sm:text-xl lg:text-2xl font-600 text-text-primary border border-border rounded-full px-6 sm:px-8 py-3 sm:py-4 hover:border-accent-lime hover:text-accent-lime transition-all duration-300"
+            >
+              <FiMail className="w-5 h-5 sm:w-6 sm:h-6" />
+              {EMAIL}
+              <FiArrowUpRight className="w-4 h-4 sm:w-5 sm:h-5 opacity-50 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300" />
+            </a>
+          </MagneticWrap>
+          <CopyEmailButton />
         </div>
 
         {/* Social links */}

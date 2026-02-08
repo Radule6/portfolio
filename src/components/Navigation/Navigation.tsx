@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { FiArrowUpRight } from "react-icons/fi";
+import ThemeToggle from "../ThemeToggle/ThemeToggle";
 
 // Hoisted outside component — static data (rendering-hoist-jsx)
 const navLinks = [
@@ -125,6 +126,9 @@ const Navigation: React.FC = () => {
                 <FiArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200" aria-hidden="true" />
               </a>
             </li>
+            <li>
+              <ThemeToggle />
+            </li>
           </ul>
 
           {/* ─── Hamburger button (inside nav for proper vertical alignment) ─── */}
@@ -233,6 +237,16 @@ const Navigation: React.FC = () => {
                 Start Project
                 <FiArrowUpRight className="w-5 h-5" aria-hidden="true" />
               </a>
+            </li>
+
+            <li
+              style={{
+                opacity: mobileOpen ? 1 : 0,
+                transform: mobileOpen ? "translateY(0)" : "translateY(32px)",
+                transition: `opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1) ${0.12 + (navLinks.length + 2) * 0.07}s, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1) ${0.12 + (navLinks.length + 2) * 0.07}s`,
+              }}
+            >
+              <ThemeToggle />
             </li>
           </ul>
         </nav>

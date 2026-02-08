@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FiArrowDown } from "react-icons/fi";
+import MagneticWrap from "../MagneticWrap/MagneticWrap";
 
 const LERP_FACTOR = 0.04;
 const FADE_DISTANCE = 600;
@@ -93,7 +94,7 @@ const Hero: React.FC = () => {
             <div className="hero-stagger-1 flex items-center justify-center gap-3 mb-8 sm:mb-10">
               <div className="h-px w-8 sm:w-12 bg-accent-lime/40" aria-hidden="true" />
               <span className="font-body text-xs sm:text-sm tracking-[0.3em] uppercase text-text-secondary">
-                Marko Radulovic &mdash; Full-Stack Engineer &middot; Zagreb, Croatia
+                Marko Radulovic &middot; Full-Stack Engineer &middot; Zagreb, Croatia &middot; Remote
               </span>
               <div className="h-px w-8 sm:w-12 bg-accent-lime/40" aria-hidden="true" />
             </div>
@@ -112,19 +113,23 @@ const Hero: React.FC = () => {
 
             {/* CTAs */}
             <div className="hero-stagger-6 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 mb-8 sm:mb-10">
-              <a
-                href="#contact"
-                className="group inline-flex items-center gap-2.5 font-body text-sm sm:text-base font-500 tracking-wide gradient-bg text-surface rounded-full px-7 py-3 hover:opacity-90 transition-opacity duration-300"
-              >
-                Let's work together
-                <span className="w-1.5 h-1.5 rounded-full bg-surface/30" aria-hidden="true" />
-              </a>
-              <a
-                href="#projects"
-                className="group inline-flex items-center gap-2.5 font-body text-sm sm:text-base font-500 tracking-wide text-text-primary border border-border rounded-full px-7 py-3 hover:border-accent-lime hover:text-accent-lime transition-all duration-300"
-              >
-                View projects
-              </a>
+              <MagneticWrap strength={0.25}>
+                <a
+                  href="#contact"
+                  className="group inline-flex items-center gap-2.5 font-body text-sm sm:text-base font-500 tracking-wide gradient-bg text-surface rounded-full px-7 py-3 hover:opacity-90 transition-opacity duration-300"
+                >
+                  Let's work together
+                  <span className="w-1.5 h-1.5 rounded-full bg-surface/30" aria-hidden="true" />
+                </a>
+              </MagneticWrap>
+              <MagneticWrap strength={0.25}>
+                <a
+                  href="#projects"
+                  className="group inline-flex items-center gap-2.5 font-body text-sm sm:text-base font-500 tracking-wide text-text-primary border border-border rounded-full px-7 py-3 hover:border-accent-lime hover:text-accent-lime transition-all duration-300"
+                >
+                  View projects
+                </a>
+              </MagneticWrap>
             </div>
 
             {/* Availability badge */}
