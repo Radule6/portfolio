@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import Navigation from "./components/Navigation/Navigation";
 import Hero from "./components/Hero/Hero";
 import About from "./components/About/About";
@@ -8,12 +8,8 @@ import Footer from "./components/Footer/Footer";
 import Preloader from "./components/Preloader/Preloader";
 
 function App() {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const handlePreloaderComplete = useCallback(() => setLoading(false), []);
-
-  useEffect(() => {
-    setLoading(true);
-  }, []);
 
   return (
     <>
