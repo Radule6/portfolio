@@ -1,54 +1,63 @@
-# React + TypeScript + Vite
+# radule.dev
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Personal developer portfolio for Marko Radulovic -- full-stack engineer building AI-powered data products for fintech.
 
-Currently, two official plugins are available:
+**Live:** [radule.dev](https://radule.dev)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Tech Stack
 
-## Expanding the ESLint configuration
+- **Framework:** React 19 + TypeScript 5.8
+- **Build:** Vite 6 with static site generation via `vite-react-ssg`
+- **Styling:** Tailwind CSS v4 (integrated through `@tailwindcss/vite` plugin)
+- **Fonts:** Syne (display) + Outfit (body) loaded via Google Fonts
+- **Deployment:** GitHub Actions -> Hostinger via FTPS
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Project Structure
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```
+src/
+  App.tsx                  # Root component with preloader gate
+  main.tsx                 # SSG entry point
+  index.css                # Theme tokens, animations, utility classes
+  components/
+    Navigation/            # Sticky nav with mobile menu + theme toggle
+    Hero/                  # Animated hero with magnetic cursor orb
+    About/                 # Bio and skills bento grid
+    Projects/              # Project showcase cards
+    Contact/               # Contact form section
+    Footer/                # Site footer
+    Preloader/             # Staggered letter-reveal loading screen
+    ThemeToggle/           # Dark/light mode switch
+    MagneticWrap/          # Magnetic hover effect wrapper
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Design System
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- **Dark theme** by default with a full light theme override
+- **Brand gradient:** `#59FFCE -> #B7FF03 -> #FFFF00` (green to lime to yellow)
+- **Custom animations:** staggered reveals, kinetic hero entrance, floating orb, marquee, bento card hovers
+- Responsive and mobile-first using Tailwind breakpoints up to 3xl
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+## Getting Started
+
+```bash
+npm install
+npm run dev
 ```
+
+## Scripts
+
+| Command           | Description                          |
+| ----------------- | ------------------------------------ |
+| `npm run dev`     | Start Vite dev server                |
+| `npm run build`   | TypeScript check + SSG production build |
+| `npm run lint`    | Run ESLint                           |
+| `npm run preview` | Preview production build locally     |
+
+## Deployment
+
+Pushes to `main` trigger a GitHub Actions workflow that builds the site and deploys the `dist/` output to Hostinger via FTPS. Requires the following GitHub secrets:
+
+- `FTP_HOST`
+- `FTP_USERNAME`
+- `FTP_PASSWORD`
