@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { FiArrowUpRight, FiMenu, FiX } from "react-icons/fi";
+import { FiArrowUpRight } from "react-icons/fi";
 
 // Hoisted outside component — static data (rendering-hoist-jsx)
 const navLinks = [
@@ -85,7 +85,7 @@ const Navigation: React.FC = () => {
   return (
     <>
       {/* ─── Top bar ─── */}
-      <header className="fixed top-0 left-0 right-0 z-50">
+      <header className="fixed top-0 left-0 right-0 z-[70]">
         <nav
           className={`flex items-center justify-between px-6 sm:px-10 lg:px-16 py-4 sm:py-5 transition-all duration-500 ${
             scrolled && !mobileOpen
@@ -127,68 +127,107 @@ const Navigation: React.FC = () => {
             </li>
           </ul>
 
-          {/* Spacer so desktop layout isn't affected */}
-          <div className="md:hidden w-10" aria-hidden="true" />
+          {/* ─── Hamburger button (inside nav for proper vertical alignment) ─── */}
+          <button
+            ref={menuButtonRef}
+            aria-controls="mobile-nav-overlay"
+            className="md:hidden relative z-[70] p-2 -mr-2 text-text-primary"
+            aria-label={mobileOpen ? "Close menu" : "Open menu"}
+            aria-expanded={mobileOpen}
+            onClick={() => setMobileOpen((prev) => !prev)}
+          >
+            <span className="relative block w-6 h-6">
+              <span
+                className={`absolute left-0 block w-6 h-[2px] bg-current transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                  mobileOpen
+                    ? "top-[11px] rotate-45"
+                    : "top-[5px] rotate-0"
+                }`}
+              />
+              <span
+                className={`absolute left-0 top-[11px] block w-6 h-[2px] bg-current transition-opacity duration-200 ${
+                  mobileOpen ? "opacity-0" : "opacity-100"
+                }`}
+              />
+              <span
+                className={`absolute left-0 block w-6 h-[2px] bg-current transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                  mobileOpen
+                    ? "top-[11px] -rotate-45"
+                    : "top-[17px] rotate-0"
+                }`}
+              />
+            </span>
+          </button>
         </nav>
       </header>
 
-      {/* ─── Hamburger button (own stacking context, above overlay) ─── */}
-      <button
-        ref={menuButtonRef}
-        aria-controls="mobile-nav-overlay"
-        className="md:hidden fixed top-4 right-6 sm:right-10 z-[70] p-2 text-text-primary"
-        aria-label={mobileOpen ? "Close menu" : "Open menu"}
-        aria-expanded={mobileOpen}
-        onClick={() => setMobileOpen((prev) => !prev)}
-      >
-        {mobileOpen ? <FiX size={24} /> : <FiMenu size={24} />}
-      </button>
-
-      {/* ─── Mobile fullscreen overlay (sibling, not nested) ─── */}
+      {/* ─── Mobile fullscreen overlay ─── */}
       <div
         id="mobile-nav-overlay"
         role="dialog"
         aria-modal="true"
         aria-label="Mobile navigation"
-        className={`fixed inset-0 z-[60] bg-surface md:hidden transition-opacity duration-400 ${
+        className={`fixed inset-0 z-[60] bg-surface md:hidden transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
           mobileOpen
             ? "opacity-100 pointer-events-auto"
             : "opacity-0 pointer-events-none"
         }`}
         aria-hidden={!mobileOpen}
       >
-        <nav aria-label="Mobile navigation" className="flex flex-col items-center justify-center h-full px-6">
-          <ul className="flex flex-col items-center gap-8">
+        {/* Decorative gradient orb in the background */}
+        <div
+          className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[70vw] h-[70vw] max-w-[400px] max-h-[400px] rounded-full bg-[radial-gradient(circle,rgba(89,255,206,0.08)_0%,rgba(183,255,3,0.04)_40%,transparent_70%)] blur-[80px] transition-all duration-700 ${
+            mobileOpen ? "opacity-100 scale-100" : "opacity-0 scale-50"
+          }`}
+          aria-hidden="true"
+        />
+
+        <nav aria-label="Mobile navigation" className="relative flex flex-col items-center justify-center h-full px-6">
+          <ul className="flex flex-col items-center gap-6 sm:gap-8">
             {navLinks.map((link, i) => (
               <li
                 key={link.name}
+                className="overflow-hidden"
                 style={{
                   opacity: mobileOpen ? 1 : 0,
-                  transform: mobileOpen ? "translateY(0)" : "translateY(24px)",
-                  transition: `opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1) ${0.15 + i * 0.06}s, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1) ${0.15 + i * 0.06}s`,
+                  transform: mobileOpen ? "translateY(0)" : "translateY(32px)",
+                  transition: `opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1) ${0.12 + i * 0.07}s, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1) ${0.12 + i * 0.07}s`,
                 }}
               >
                 <a
                   href={link.href}
                   ref={i === 0 ? firstLinkRef : undefined}
                   onClick={closeMenu}
-                  className="font-display text-4xl sm:text-5xl font-800 text-text-primary tracking-tight hover:text-accent-lime transition-colors duration-200 uppercase"
+                  className="block font-display text-2xl sm:text-3xl font-800 text-text-primary tracking-tight hover:text-accent-lime active:text-accent-lime transition-colors duration-200 uppercase"
                 >
                   {link.name}
                 </a>
               </li>
             ))}
+
+            {/* Divider line */}
+            <li
+              aria-hidden="true"
+              style={{
+                opacity: mobileOpen ? 1 : 0,
+                transform: mobileOpen ? "scaleX(1)" : "scaleX(0)",
+                transition: `opacity 0.4s ease ${0.12 + navLinks.length * 0.07}s, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) ${0.12 + navLinks.length * 0.07}s`,
+              }}
+            >
+              <span className="block w-16 h-px bg-border" />
+            </li>
+
             <li
               style={{
                 opacity: mobileOpen ? 1 : 0,
-                transform: mobileOpen ? "translateY(0)" : "translateY(24px)",
-                transition: `opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.4s, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.4s`,
+                transform: mobileOpen ? "translateY(0)" : "translateY(32px)",
+                transition: `opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1) ${0.12 + (navLinks.length + 1) * 0.07}s, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1) ${0.12 + (navLinks.length + 1) * 0.07}s`,
               }}
             >
               <a
                 href="#contact"
                 onClick={closeMenu}
-                className="inline-flex items-center gap-2 font-body text-lg font-500 px-6 py-3 rounded-full border border-border text-text-primary hover:border-accent-lime hover:text-accent-lime transition-all duration-300"
+                className="inline-flex items-center gap-2 font-body text-base sm:text-lg font-500 px-6 py-3 rounded-full border border-border text-text-primary hover:border-accent-lime hover:text-accent-lime active:border-accent-lime active:text-accent-lime transition-all duration-300"
                 aria-label="Start a new project"
               >
                 Start Project
