@@ -43,16 +43,16 @@ const Preloader: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
           return (
             <span
               key={i}
-              className={`inline-block transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+              className={`inline-block transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
                 isAccent ? "gradient-text" : "text-text-primary"
               }`}
               style={{
                 opacity: phase === "enter" ? 0 : 1,
                 transform:
                   phase === "enter"
-                    ? "translateY(16px) scale(0.9)"
-                    : "translateY(0) scale(1)",
-                filter: phase === "enter" ? "blur(4px)" : "blur(0px)",
+                    ? "translate3d(0,16px,0) scale(0.9)"
+                    : "translate3d(0,0,0) scale(1)",
+                willChange: "opacity, transform",
                 transitionDelay: `${i * LETTER_STAGGER}ms`,
               }}
             >
