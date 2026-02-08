@@ -86,10 +86,10 @@ const Navigation: React.FC = () => {
       {/* ─── Top bar ─── */}
       <header className="fixed top-0 left-0 right-0 z-[70]">
         <nav
-          className={`flex items-center justify-between px-6 sm:px-10 lg:px-16 py-4 sm:py-5 transition-all duration-500 ${
+          className={`flex items-center justify-between px-6 sm:px-10 lg:px-16 py-4 sm:py-5 border-b transition-[background-color,backdrop-filter,border-color] duration-500 ${
             scrolled && !mobileOpen
-              ? "bg-nav-background backdrop-blur-xl border-b border-border"
-              : "bg-transparent"
+              ? "bg-nav-background backdrop-blur-xl border-border/20"
+              : "bg-transparent border-transparent"
           }`}
           aria-label="Main navigation"
         >

@@ -45,7 +45,7 @@ const projects: Project[] = [
     color: "#59FFCE",
     image: "/projects/radule-dev.png",
     liveUrl: "https://radule.dev",
-    repoUrl: "https://github.com/Radule6/web-portfolio",
+    repoUrl: "https://github.com/Radule6/portfolio",
   },
   {
     title: "Freelancer OS",
