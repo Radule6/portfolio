@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { FiArrowUpRight } from "react-icons/fi";
 import ThemeToggle from "../ThemeToggle/ThemeToggle";
+import { CommandPaletteTrigger } from "../CommandPalette/CommandPalette";
 
 // Hoisted outside component — static data (rendering-hoist-jsx)
 const navLinks = [
@@ -123,6 +124,19 @@ const Navigation: React.FC = () => {
                 Start Project
                 <FiArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200" aria-hidden="true" />
               </a>
+            </li>
+            <li className="hidden lg:block">
+              <CommandPaletteTrigger
+                onClick={() => {
+                  window.dispatchEvent(
+                    new KeyboardEvent("keydown", {
+                      key: "k",
+                      metaKey: true,
+                      ctrlKey: true,
+                    })
+                  );
+                }}
+              />
             </li>
             <li>
               <ThemeToggle />
