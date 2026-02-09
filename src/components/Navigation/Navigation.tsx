@@ -129,7 +129,11 @@ const Navigation: React.FC = () => {
               <CommandPaletteTrigger
                 onClick={() => {
                   window.dispatchEvent(
-                    new KeyboardEvent("keydown", { key: "k", metaKey: true })
+                    new KeyboardEvent("keydown", {
+                      key: "k",
+                      metaKey: true,
+                      ctrlKey: true,
+                    })
                   );
                 }}
               />

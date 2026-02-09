@@ -1,3 +1,5 @@
+export const THEME_STORAGE_KEY = "radule-theme";
+
 export const PERSONAL = {
   name: "Marko Radulovic",
   title: "Full-Stack Engineer",

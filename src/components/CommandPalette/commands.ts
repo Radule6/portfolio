@@ -1,3 +1,5 @@
+import { PERSONAL, THEME_STORAGE_KEY } from "./terminalData";
+
 export type CommandCategory = "navigate" | "action" | "social" | "easter-egg";
 
 export interface Command {
@@ -14,8 +16,7 @@ export interface Command {
   action: () => void | Promise<void>;
 }
 
-const THEME_STORAGE_KEY = "radule-theme";
-const EMAIL = "hello@radule.dev";
+const EMAIL = PERSONAL.email;
 
 function scrollTo(selector: string) {
   document.querySelector(selector)?.scrollIntoView({ behavior: "smooth", block: "start" });

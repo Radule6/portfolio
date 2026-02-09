@@ -1,8 +1,6 @@
 import type { ReactNode } from "react";
-import { PERSONAL, BIO, EXPERIENCE, TECH_STACK, PROJECTS } from "./terminalData";
+import { PERSONAL, BIO, EXPERIENCE, TECH_STACK, PROJECTS, THEME_STORAGE_KEY } from "./terminalData";
 import AsciiAnimation, { BASKETBALL_FRAMES } from "./AsciiAnimation";
-
-const THEME_STORAGE_KEY = "radule-theme";
 
 export interface TerminalCommandDef {
   name: string;
@@ -177,8 +175,8 @@ export const terminalCommands: TerminalCommandDef[] = [
     description: "Work experience",
     handler: () => (
       <div className="space-y-3">
-        {EXPERIENCE.map((e) => (
-          <div key={e.company}>
+        {EXPERIENCE.map((e, i) => (
+          <div key={`${e.company}-${i}`}>
             <div className="flex items-center gap-2">
               <span className="text-text-primary font-medium">{e.role}</span>
               <span className="text-text-muted">at {e.company}</span>

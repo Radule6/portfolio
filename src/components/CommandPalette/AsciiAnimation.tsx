@@ -18,7 +18,7 @@ const AsciiAnimation: React.FC<AsciiAnimationProps> = ({
 }) => {
   const [frameIndex, setFrameIndex] = useState(0);
   const [done, setDone] = useState(false);
-  const timerRef = useRef<ReturnType<typeof setInterval>>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     if (frames.length <= 1 || done) return;

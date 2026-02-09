@@ -58,10 +58,11 @@ const TerminalMode: React.FC<TerminalModeProps> = ({ onExit }) => {
     if (ready) requestAnimationFrame(() => inputRef.current?.focus());
   }, [ready]);
 
-  /* ── Recompute autocomplete suggestions ── */
+  /* ── Recompute autocomplete suggestions (capped to visible max) ── */
+  const MAX_SUGGESTIONS = 6;
   useEffect(() => {
     const firstWord = inputValue.split(/\s+/)[0] ?? "";
-    const matches = filterTerminalCommands(firstWord);
+    const matches = filterTerminalCommands(firstWord).slice(0, MAX_SUGGESTIONS);
     setSuggestions(matches);
     setSuggestionIndex(-1);
   }, [inputValue]);
@@ -278,7 +279,7 @@ const TerminalMode: React.FC<TerminalModeProps> = ({ onExit }) => {
             aria-label="Command suggestions"
             className="absolute bottom-full left-0 right-0 max-h-48 overflow-y-auto border-t border-border bg-surface"
           >
-            {suggestions.slice(0, 6).map((cmd, i) => (
+            {suggestions.map((cmd, i) => (
               <li
                 key={cmd.name}
                 role="option"

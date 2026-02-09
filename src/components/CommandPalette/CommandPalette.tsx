@@ -48,8 +48,12 @@ const CommandPalette: React.FC = () => {
   const filtered = useMemo(() => filterCommands(query), [query]);
   const groups = useMemo(() => groupByCategory(filtered), [filtered]);
 
-  /* Build flat index for keyboard nav */
-  const flatList = useMemo(() => filtered, [filtered]);
+  /* Pre-compute flat index map: command id → position in filtered list */
+  const flatIndexMap = useMemo(() => {
+    const map = new Map<string, number>();
+    filtered.forEach((cmd, i) => map.set(cmd.id, i));
+    return map;
+  }, [filtered]);
 
   const isTerminal = view === "terminal";
 
@@ -150,7 +154,7 @@ const CommandPalette: React.FC = () => {
       switch (e.key) {
         case "ArrowDown":
           e.preventDefault();
-          setSelectedIndex((i) => Math.min(i + 1, flatList.length - 1));
+          setSelectedIndex((i) => Math.min(i + 1, filtered.length - 1));
           break;
         case "ArrowUp":
           e.preventDefault();
@@ -158,7 +162,7 @@ const CommandPalette: React.FC = () => {
           break;
         case "Enter":
           e.preventDefault();
-          if (flatList[selectedIndex]) execute(flatList[selectedIndex]);
+          if (filtered[selectedIndex]) execute(filtered[selectedIndex]);
           break;
         case "Escape":
           e.preventDefault();
@@ -166,7 +170,7 @@ const CommandPalette: React.FC = () => {
           break;
       }
     },
-    [flatList, selectedIndex, execute, close]
+    [filtered, selectedIndex, execute, close]
   );
 
   /* ── Scroll selected item into view ── */
@@ -191,10 +195,6 @@ const CommandPalette: React.FC = () => {
   useEffect(() => {
     if (!isOpen) setFeedbackMap({});
   }, [isOpen]);
-
-  /* ── Track flat index offset per group for rendering ── */
-
-  let flatIndex = 0;
 
   if (!isOpen) return null;
 
@@ -278,8 +278,8 @@ const CommandPalette: React.FC = () => {
                   aria-expanded={filtered.length > 0}
                   aria-controls="cmd-palette-list"
                   aria-activedescendant={
-                    flatList[selectedIndex]
-                      ? `cmd-${flatList[selectedIndex].id}`
+                    filtered[selectedIndex]
+                      ? `cmd-${filtered[selectedIndex].id}`
                       : undefined
                   }
                   aria-autocomplete="list"
@@ -316,7 +316,7 @@ const CommandPalette: React.FC = () => {
                 ) : (
                   groups.map((group) => {
                     const groupItems = group.items.map((cmd) => {
-                      const itemIndex = flatIndex++;
+                      const itemIndex = flatIndexMap.get(cmd.id) ?? -1;
                       const isActive = itemIndex === selectedIndex;
 
                       const feedback = feedbackMap[cmd.id];
