@@ -1,0 +1,598 @@
+import { useState, useEffect, useRef } from "react";
+
+interface AsciiAnimationProps {
+  frames: string[];
+  /** ms between frames */
+  interval?: number;
+  /** Loop forever or play once */
+  loop?: boolean;
+  /** Called when a non-looping animation finishes */
+  onComplete?: () => void;
+}
+
+const AsciiAnimation: React.FC<AsciiAnimationProps> = ({
+  frames,
+  interval = 180,
+  loop = false,
+  onComplete,
+}) => {
+  const [frameIndex, setFrameIndex] = useState(0);
+  const [done, setDone] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setInterval>>(null);
+
+  useEffect(() => {
+    if (frames.length <= 1 || done) return;
+
+    timerRef.current = setInterval(() => {
+      setFrameIndex((prev) => {
+        const next = prev + 1;
+        if (next >= frames.length) {
+          if (loop) return 0;
+          // Stop on last frame
+          if (timerRef.current) clearInterval(timerRef.current);
+          setDone(true);
+          onComplete?.();
+          return prev;
+        }
+        return next;
+      });
+    }, interval);
+
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [frames, interval, loop, done, onComplete]);
+
+  return (
+    <pre
+      className="text-accent-lime leading-tight select-none"
+      style={{
+        fontFamily:
+          'ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, monospace',
+        fontSize: "11px",
+        lineHeight: "1.2",
+      }}
+      aria-hidden="true"
+    >
+      {frames[frameIndex]}
+    </pre>
+  );
+};
+
+export default AsciiAnimation;
+
+/* ── Logo reveal — Matrix-style scramble decode ── */
+
+const LOGO_COLS = 52;
+const LOGO_ROWS = 17;
+const SCRAMBLE_POOL = "!@#$%^&*=+~<>{}[]|/\\:;01234567890ABCDEF";
+
+/** Place text content onto specific rows/cols of the target grid */
+const LOGO_CONTENT: { row: number; text: string }[] = [
+  { row: 5, text: "════════════════════════════════════════" },
+  { row: 7, text: "R · A · D · U · L · E" },
+  { row: 9, text: ".DEV" },
+  { row: 11, text: "════════════════════════════════════════" },
+];
+
+function buildTargetGrid(): string[][] {
+  const grid: string[][] = [];
+  for (let r = 0; r < LOGO_ROWS; r++) {
+    grid[r] = new Array(LOGO_COLS).fill(" ");
+  }
+  for (const { row, text } of LOGO_CONTENT) {
+    const col = Math.floor((LOGO_COLS - text.length) / 2);
+    for (let c = 0; c < text.length; c++) {
+      grid[row][col + c] = text[c];
+    }
+  }
+  return grid;
+}
+
+/** Index every non-space target cell for progressive locking */
+function getTargetCells(grid: string[][]): { r: number; c: number }[] {
+  const cells: { r: number; c: number }[] = [];
+  for (let r = 0; r < LOGO_ROWS; r++) {
+    for (let c = 0; c < LOGO_COLS; c++) {
+      if (grid[r][c] !== " ") cells.push({ r, c });
+    }
+  }
+  // Shuffle for organic reveal order
+  for (let i = cells.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [cells[i], cells[j]] = [cells[j], cells[i]];
+  }
+  return cells;
+}
+
+function randomChar(): string {
+  return SCRAMBLE_POOL[Math.floor(Math.random() * SCRAMBLE_POOL.length)];
+}
+
+interface LogoRevealProps {
+  /** Total duration in ms before onComplete fires */
+  duration?: number;
+  onComplete?: () => void;
+}
+
+export const LogoReveal: React.FC<LogoRevealProps> = ({
+  duration = 3400,
+  onComplete,
+}) => {
+  const [frame, setFrame] = useState("");
+  const [fading, setFading] = useState(false);
+  const rafRef = useRef<number>(0);
+  const startRef = useRef(0);
+  const targetGrid = useRef(buildTargetGrid());
+  const targetCells = useRef(getTargetCells(targetGrid.current));
+  const locked = useRef<Set<string>>(new Set());
+
+  const onCompleteRef = useRef(onComplete);
+  onCompleteRef.current = onComplete;
+
+  const DECODE_MS = duration - 2200; // Noise + decode phase
+  const HOLD_MS = duration - 600; // Clean logo hold before fade
+
+  useEffect(() => {
+    startRef.current = performance.now();
+    let lastTime = 0;
+
+    function animate(time: number) {
+      if (time - lastTime < 50) {
+        rafRef.current = requestAnimationFrame(animate);
+        return;
+      }
+      lastTime = time;
+
+      const elapsed = time - startRef.current;
+      const progress = Math.min(elapsed / DECODE_MS, 1);
+      const grid = targetGrid.current;
+      const cells = targetCells.current;
+
+      // Lock more target cells as progress advances
+      const shouldLock = Math.floor(progress * cells.length);
+      for (let i = locked.current.size; i < shouldLock; i++) {
+        const { r, c } = cells[i];
+        locked.current.add(`${r},${c}`);
+      }
+
+      // Noise density: starts thick, thins as logo reveals
+      const noiseDensity =
+        progress < 0.3
+          ? 0.35 // Dense noise early
+          : progress < 0.7
+            ? 0.35 * (1 - (progress - 0.3) / 0.4) // Thinning
+            : 0.02; // Almost gone
+
+      // Build display
+      const lines: string[] = [];
+      for (let r = 0; r < LOGO_ROWS; r++) {
+        let line = "";
+        for (let c = 0; c < LOGO_COLS; c++) {
+          const key = `${r},${c}`;
+          const target = grid[r][c];
+
+          if (locked.current.has(key)) {
+            // Locked — show final character
+            line += target;
+          } else if (target !== " ") {
+            // Unlocked target cell — scramble
+            line += randomChar();
+          } else {
+            // Background — noise or space
+            line += Math.random() < noiseDensity ? randomChar() : " ";
+          }
+        }
+        lines.push(line);
+      }
+
+      setFrame(lines.join("\n"));
+
+      if (elapsed < HOLD_MS) {
+        rafRef.current = requestAnimationFrame(animate);
+      }
+    }
+
+    rafRef.current = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, [DECODE_MS, HOLD_MS]);
+
+  useEffect(() => {
+    const fadeTimer = setTimeout(() => setFading(true), duration - 600);
+    const doneTimer = setTimeout(() => onCompleteRef.current?.(), duration);
+    return () => {
+      clearTimeout(fadeTimer);
+      clearTimeout(doneTimer);
+    };
+  }, [duration]);
+
+  return (
+    <div
+      className="flex flex-col items-center justify-center gap-4"
+      style={{
+        opacity: fading ? 0 : 1,
+        transition: "opacity 600ms cubic-bezier(0.7,0,0.3,1)",
+      }}
+      aria-hidden="true"
+    >
+      <pre
+        className="text-accent-lime select-none"
+        style={{
+          fontFamily:
+            'ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, monospace',
+          fontSize: "11px",
+          lineHeight: "1.2",
+        }}
+      >
+        {frame}
+      </pre>
+      <span className="text-text-muted text-[10px] tracking-[0.25em] uppercase font-body animate-pulse-glow">
+        initializing
+      </span>
+    </div>
+  );
+};
+
+/* ── Basketball dunk sequence — cinematic ASCII art ── */
+
+export const BASKETBALL_FRAMES: string[] = [
+  // ─── Frame 1: Scene set — player at half court, dribbling ───
+  `  ╔═══════════════════════════════════════════════════╗
+  ║  HOME  87        VISITOR  84   ⏱ 00:04  Q4  ║
+  ╚═══════════════════════════════════════════════════╝
+          ┌──────┐
+          │\\/\\/\\/│    ┌────────────────────────────┐
+          │      │    │ .  . ..  .    .  .  ..  .  │
+          │______│    │  ..  .  . ..   . ..  .   . │
+          ├──────┤    │.  .  ..  .  . .  . .  .. . │
+          │      │    └────────────────────────────┘
+          │      │
+          │      │
+    ┌──┐  │      │
+    │@@│  │      │
+   ┌┤  ├┐ │      │
+   │└┬┬┘│ │      │
+    │││ │  │      │
+    └┤├─┘  │      │
+     ││    │      │
+    ┌┘└┐   │      │
+    └──┘   │      │
+  ═══o════════════════════════════════════════════════`,
+
+  // ─── Frame 2: Dribble down — ball bouncing ───
+  `  ╔═══════════════════════════════════════════════════╗
+  ║  HOME  87        VISITOR  84   ⏱ 00:04  Q4  ║
+  ╚═══════════════════════════════════════════════════╝
+          ┌──────┐
+          │\\/\\/\\/│    ┌────────────────────────────┐
+          │      │    │ .  . ..  .    .  .  ..  .  │
+          │______│    │  ..  .  . ..   . ..  .   . │
+          ├──────┤    │.  .  ..  .  . .  . .  .. . │
+          │      │    └────────────────────────────┘
+          │      │
+          │      │
+          │      │        ┌──┐
+          │      │        │@@│
+          │      │       ┌┤  ├┐
+          │      │       │└┬┬┘│
+          │      │        │││ │
+          │      │        └┤├─┘
+          │      │     o   ││
+          │      │        ┌┘└┐
+          │      │        └──┘
+  ═══════════════════════════════════════════════════`,
+
+  // ─── Frame 3: Driving to the basket — full sprint ───
+  `  ╔═══════════════════════════════════════════════════╗
+  ║  HOME  87        VISITOR  84   ⏱ 00:03  Q4  ║
+  ╚═══════════════════════════════════════════════════╝
+          ┌──────┐
+          │\\/\\/\\/│    ┌────────────────────────────┐
+          │      │    │ .  . ..  .    .  .  ..  .  │
+          │______│    │  ..  .  . ..   . ..  .   . │
+          ├──────┤    │.  .  ..  .  . .  . .  .. . │
+          │      │    └────────────────────────────┘
+          │      │
+          │      │            o
+          │      │           ┌──┐
+          │      │           │@@│
+          │      │          ┌┘  └┐
+          │      │    ~  ~  │ ┬┬ │
+          │      │           ││/
+          │      │           ├┘
+          │      │          ─┘ └─
+          │      │
+          │      │
+  ═══════════════════════════════════════════════════`,
+
+  // ─── Frame 4: Gathering for the jump — crouching ───
+  `  ╔═══════════════════════════════════════════════════╗
+  ║  HOME  87        VISITOR  84   ⏱ 00:03  Q4  ║
+  ╚═══════════════════════════════════════════════════╝
+          ┌──────┐
+          │\\/\\/\\/│    ┌────────────────────────────┐
+          │      │    │ .  .  .  .    .  .  ..  .  │
+          │______│    │  .   .  . ..   . ..  .   . │
+          ├──────┤    │.  .  ..  .  . .  . .  .  . │
+          │      │    └────────────────────────────┘
+          │      │
+          │      │
+          │      │
+          │      │     o
+          │      │    ┌──┐
+          │      │    │@@│
+          │      │   ┌┘  └┐
+          │      │   │ ┬┬ │
+          │      │   ┌┘┘└└┐
+          │      │   └────┘
+          │      │
+  ═══════════════════════════════════════════════════`,
+
+  // ─── Frame 5: Liftoff — leaving the ground ───
+  `  ╔═══════════════════════════════════════════════════╗
+  ║  HOME  87        VISITOR  84   ⏱ 00:02  Q4  ║
+  ╚═══════════════════════════════════════════════════╝
+          ┌──────┐
+          │\\/\\/\\/│    ┌────────────────────────────┐
+          │      │    │ .  .  .  .  . .  .  ..  .  │
+          │______│    │  .   .  . ..  . ..  .    . │
+          ├──────┤    │.  .  ..  .  . .  . .  .  . │
+          │      │    └────────────────────────────┘
+          │      │
+          │      │
+          │      │  o
+          │      │ ┌──┐
+          │      │ │@@│
+          │      │┌┘  │
+          │      ││┬┬ │
+          │      │ ││
+          │      │ │└─
+          │      │
+          │      │    ⌇  ⌇
+  ═══════════════════════════════════════════════════`,
+
+  // ─── Frame 6: Rising — ball cocked back ───
+  `  ╔═══════════════════════════════════════════════════╗
+  ║  HOME  87        VISITOR  84   ⏱ 00:02  Q4  ║
+  ╚═══════════════════════════════════════════════════╝
+          ┌──────┐
+          │\\/\\/\\/│    ┌────────────────────────────┐
+          │      │    │ .  .  .  .  . .  .  ..  .  │
+          │______│    │  .  ..  . ..  . ..  .    . │
+          ├──────┤    │.  .  ..  .  . .  . .  .  . │
+          │      │    └────────────────────────────┘
+          │      │o
+          │      ┌──┐
+          │      │@@│
+          │     ┌┘  │
+          │     │┬┬─┘
+          │      ││
+          │      └┘
+          │      │
+          │      │
+          │      │     ⌇  ⌇
+          │      │
+          │      │
+  ═══════════════════════════════════════════════════`,
+
+  // ─── Frame 7: At rim height — arm extending ───
+  `  ╔═══════════════════════════════════════════════════╗
+  ║  HOME  87        VISITOR  84   ⏱ 00:02  Q4  ║
+  ╚═══════════════════════════════════════════════════╝
+          ┌──────┐
+          │\\/\\/\\/│    ┌────────────────────────────┐
+          │      │    │ . :.  .  .  . .  .  .. :.  │
+        o │______│    │  .  ..  . ..  . ..  .    . │
+       ┌──┤──────┤    │.  . :..  .  . .  . .  . : │
+       │@@│      │    └────────────────────────────┘
+      ┌┘  │      │
+      │┬┬─┘      │
+       ││  │      │
+       └┘  │      │
+          │      │
+          │      │     ⌇  ⌇
+          │      │
+          │      │
+          │      │
+          │      │
+          │      │
+  ═══════════════════════════════════════════════════`,
+
+  // ─── Frame 8: Above the rim — ball slamming down ───
+  `  ╔═══════════════════════════════════════════════════╗
+  ║  HOME  87        VISITOR  84   ⏱ 00:01  Q4  ║
+  ╚═══════════════════════════════════════════════════╝
+       o  ┌──────┐
+      ┌──┐│\\/\\/\\/│    ┌────────────────────────────┐
+      │@@─┤      │    │ . :.  . :.  . .  . :.. :.  │
+     ┌┘  ││______│    │  .  ..  . ..  . .. :.    . │
+     │┬┬ │├──────┤    │. :. :..  .  . .  . .  . : │
+      │╲  │      │    └────────────────────────────┘
+      └ ╲ │      │
+          │      │
+          │      │
+          │      │
+          │      │     ⌇  ⌇
+          │      │
+          │      │
+          │      │
+          │      │
+          │      │
+  ═══════════════════════════════════════════════════`,
+
+  // ─── Frame 9: DUNK CONTACT — ball through rim ───
+  `  ╔═══════════════════════════════════════════════════╗
+  ║  HOME  87        VISITOR  84   ⏱ 00:01  Q4  ║
+  ╚═══════════════════════════════════════════════════╝
+          ┌──────┐
+     ┌──┐ │\\/\\/\\/│    ┌────────────────────────────┐
+     │@@├─◉      │    │ .::.  . :.  .: .  . :.. :. │
+    ┌┘  │ │______│    │ :.  ..  . .. :. .. :.  : . │
+    │┬┬ │ ├──────┤    │.: :. :..  .  . .  . . :. : │
+     │╲   │ \\  / │    └────────────────────────────┘
+     └ ╲  │  \\/  │
+          │      │
+          │      │
+          │      │
+          │      │     ⌇  ⌇
+          │      │
+          │      │
+          │      │
+          │      │
+          │      │
+  ═══════════════════════════════════════════════════`,
+
+  // ─── Frame 10: Ball ripping through net ───
+  `  ╔═══════════════════════════════════════════════════╗
+  ║  HOME  87        VISITOR  84   ⏱ 00:01  Q4  ║
+  ╚═══════════════════════════════════════════════════╝
+          ┌──────┐
+      ┌──┐│\\/\\/\\/│    ┌────────────────────────────┐
+      │@@││      │    │.::..: . :. ..: .  .::..::.│
+     ┌┘  ││______│    │:. :..  . .. :. ..::. :: . │
+     │┬┬ │├──────┤    │.:::.:..  . :. .  . .::.:.:│
+      │╲  │ │  │ │    └────────────────────────────┘
+      └ ╲ │ │◉ │ │
+          │  ╲╱  │
+          │      │
+          │      │
+          │      │     ⌇  ⌇
+          │      │
+          │      │
+          │      │
+          │      │
+          │      │
+  ═══════════════════════════════════════════════════`,
+
+  // ─── Frame 11: Hanging on rim — net stretched ───
+  `  ╔═══════════════════════════════════════════════════╗
+  ║  HOME  87        VISITOR  84   ⏱ 00:01  Q4  ║
+  ╚═══════════════════════════════════════════════════╝
+          ┌──────┐
+          │\\/\\/\\/│    ┌────────────────────────────┐
+     ┌──┐─┤      │    │:::..:::.:. ..: . .:::..::. │
+     │@@│ │______│    │:. :..::. .. :. ..::. :: :. │
+    ┌┘  └┐├──────┤    │.:::.:..::. :. . :. .::.:.:│
+    │ ┬┬ ││ │  │ │    └────────────────────────────┘
+     ╲││╱ │ │  │ │
+      ││  │  ╲╱  │
+     ┌┘└┐ │  ◉   │
+     └──┘ │      │
+          │      │
+          │      │
+          │      │
+          │      │
+          │      │
+          │      │
+          │      │
+  ═══════════════════════════════════════════════════`,
+
+  // ─── Frame 12: Dropping down — ball bouncing ───
+  `  ╔═══════════════════════════════════════════════════╗
+  ║  HOME  89 ★      VISITOR  84   ⏱ 00:01  Q4  ║
+  ╚═══════════════════════════════════════════════════╝
+          ┌──────┐
+          │\\/\\/\\/│    ┌────────────────────────────┐
+          │      │    │:::..:::.:. ..: . .:::..::. │
+          │______│    │:. :..::. .. :. ..::. :: :. │
+          ├──────┤    │.:::.:..::. :. . :. .::.:.:│
+          │ \\  / │    └────────────────────────────┘
+     ┌──┐ │  \\/  │
+     │@@│ │      │
+    ┌┘  └┐│      │
+    │ ┬┬ ││      │
+     ╲││╱ │      │
+      ││  │      │
+     ┌┘└┐ │  ◉   │
+     └──┘ │      │
+          │      │
+  ═══════════════════════════════════════════════════`,
+
+  // ─── Frame 13: Landing — impact ───
+  `  ╔═══════════════════════════════════════════════════╗
+  ║  HOME  89 ★      VISITOR  84   ⏱ 00:01  Q4  ║
+  ╚═══════════════════════════════════════════════════╝
+          ┌──────┐
+          │\\/\\/\\/│    ┌────────────────────────────┐
+          │      │    │:::..:::.:. ..: . .:::..::. │
+          │______│    │:. :..::. .. :. ..::. :: :. │
+          ├──────┤    │.:::.:..::. :. . :. .::.:.:│
+          │ \\  / │    └────────────────────────────┘
+          │  \\/  │
+          │      │
+          │      │
+          │      │
+     ┌──┐ │      │         ◉
+     │@@│ │      │
+    ┌┘  └┐│      │
+    │ ┬┬ ││      │
+    ┌┘┘└└┐│      │
+    └────┘│      │
+  ═══╳═══════════════════════════════════════════════`,
+
+  // ─── Frame 14: Celebration — arms up ───
+  `  ╔═══════════════════════════════════════════════════╗
+  ║  HOME  89 ★      VISITOR  84   ⏱ 00:00  Q4  ║
+  ╚═══════════════════════════════════════════════════╝
+          ┌──────┐
+          │\\/\\/\\/│    ┌────────────────────────────┐
+          │      │    │::GAME OVER:::GAME OVER:::::│
+          │______│    │:. :..::. .. :. ..::. :: :. │
+          ├──────┤    │:::GAME OVER:::GAME OVER::::│
+          │ \\  / │    └────────────────────────────┘
+          │  \\/  │
+          │      │
+          │      │
+    ╲┌──┐╱│      │
+     │@@│ │      │             ◉
+     │  │ │      │
+     │┬┬│ │      │
+      ││  │      │
+     ┌┘└┐ │      │
+     └──┘ │      │
+  ═══════════════════════════════════════════════════`,
+
+  // ─── Frame 15: Celebration — flexing ───
+  `  ╔═══════════════════════════════════════════════════╗
+  ║  HOME  89 ★      VISITOR  84   ⏱ 00:00  Q4  ║
+  ╚═══════════════════════════════════════════════════╝
+          ┌──────┐
+          │\\/\\/\\/│    ┌────────────────────────────┐
+          │      │    │    ★  GAME  OVER  ★        │
+          │______│    │        HOME  WINS           │
+          ├──────┤    │      ★ ★ ★ ★ ★ ★ ★        │
+          │ \\  / │    └────────────────────────────┘
+          │  \\/  │
+          │      │
+     ╲──┐ │      │
+     │@@├┐│      │
+     │  │││      │
+     │┬┬│╱│      │              ◉
+      ││  │      │
+     ┌┘└┐ │      │
+     └──┘ │      │
+          │      │
+  ═══════════════════════════════════════════════════`,
+
+  // ─── Frame 16: Final — walking away ───
+  `  ╔═══════════════════════════════════════════════════╗
+  ║  HOME  89 ★      VISITOR  84   ⏱ 00:00  Q4  ║
+  ╚═══════════════════════════════════════════════════╝
+          ┌──────┐
+          │\\/\\/\\/│    ┌────────────────────────────┐
+          │      │    │        ★ FINAL ★           │
+          │______│    │     HOME 89  AWAY 84       │
+          ├──────┤    │        GG  EZ  💀           │
+          │ \\  / │    └────────────────────────────┘
+          │  \\/  │
+          │      │
+          │      │
+          │      │
+          │      │
+          │      │             ┌──┐
+          │      │             │@@│
+          │      │            ┌┘  └┐
+          │      │             │┬┬│         ◉
+          │      │            ─┘  └─
+  ═══════════════════════════════════════════════════`,
+];
