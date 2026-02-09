@@ -125,7 +125,7 @@ const Navigation: React.FC = () => {
                 <FiArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200" aria-hidden="true" />
               </a>
             </li>
-            <li>
+            <li className="hidden lg:block">
               <CommandPaletteTrigger
                 onClick={() => {
                   window.dispatchEvent(
