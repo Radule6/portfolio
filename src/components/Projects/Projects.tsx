@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { FiExternalLink, FiGithub, FiX } from "react-icons/fi";
 
 interface Project {
@@ -14,60 +15,62 @@ interface Project {
   role?: string;
 }
 
-const projects: Project[] = [
-  {
-    title: "Exante Data AI Search",
-    description:
-      "Built the RAG-based search system that lets institutional clients query proprietary financial datasets using natural language. Own full-stack development across the React frontend, Python/FastAPI backend, PostgreSQL, and AWS infrastructure.",
-    tags: ["React", "FastAPI", "PostgreSQL", "AWS", "RAG"],
-    color: "#59FFCE",
-    company: "Exante Data",
-    role: "Full Stack Engineer",
-    image: "/projects/exante-data.png",
-    liveUrl: "https://ai.exantedata.com/",
-  },
-  {
-    title: "MarketReader Dashboard",
-    description:
-      "Built the platform's interactive charting system from scratch, visualizing thousands of financial data points in real-time. Owned end-to-end development of the embeddable widget system that expanded platform reach to external sites.",
-    tags: ["React", "TypeScript", "HighCharts", "Python"],
-    color: "#B7FF03",
-    company: "MarketReader",
-    role: "Software Engineer",
-    image: "/projects/marketreader.png",
-    liveUrl: "https://app.marketreader.com/",
-  },
-  {
-    title: "radule.dev",
-    description:
-      "The site you're looking at. Custom portfolio built from scratch with a focus on performance, animation, and accessibility. Deployed via GitHub Actions CI/CD pipeline.",
-    tags: ["React", "TypeScript", "Tailwind CSS", "Vite"],
-    color: "#59FFCE",
-    image: "/projects/radule-dev.png",
-    liveUrl: "https://radule.dev",
-    repoUrl: "https://github.com/Radule6/portfolio",
-  },
-  {
-    title: "Freelancer OS",
-    description:
-      "An all-in-one platform for independent professionals — invoicing, project management, and client workflows in a single place. Built to replace the patchwork of tools freelancers juggle daily.",
-    tags: ["Next.js", "Supabase", "Vercel"],
-    color: "#B7FF03",
-    status: "coming-soon" as const,
-  },
-];
-
-// Hoisted outside component — static data never changes (rerender-derived-state)
-const featured = projects.filter((p) => p.image);
-const upcoming = projects.filter((p) => p.status === "coming-soon");
-
 const Projects: React.FC = () => {
+  const { t, i18n } = useTranslation("projects");
   const sectionRef = useRef<HTMLElement>(null);
   const [visible, setVisible] = useState(false);
   const [modalProject, setModalProject] = useState<Project | null>(null);
   const modalCloseRef = useRef<HTMLButtonElement>(null);
   const modalDialogRef = useRef<HTMLDivElement>(null);
   const returnFocusRef = useRef<HTMLElement | null>(null);
+
+  const projects: Project[] = useMemo(
+    () => [
+      {
+        title: t("items.exante.title"),
+        description: t("items.exante.description"),
+        tags: ["React", "FastAPI", "PostgreSQL", "AWS", "RAG"],
+        color: "#59FFCE",
+        company: t("items.exante.company"),
+        role: t("items.exante.role"),
+        image: "/projects/exante-data.png",
+        liveUrl: "https://ai.exantedata.com/",
+      },
+      {
+        title: t("items.marketreader.title"),
+        description: t("items.marketreader.description"),
+        tags: ["React", "TypeScript", "HighCharts", "Python"],
+        color: "#B7FF03",
+        company: t("items.marketreader.company"),
+        role: t("items.marketreader.role"),
+        image: "/projects/marketreader.png",
+        liveUrl: "https://app.marketreader.com/",
+      },
+      {
+        title: t("items.raduledev.title"),
+        description: t("items.raduledev.description"),
+        tags: ["React", "TypeScript", "Tailwind CSS", "Vite"],
+        color: "#59FFCE",
+        image: "/projects/radule-dev.png",
+        liveUrl: "https://radule.dev",
+        repoUrl: "https://github.com/Radule6/portfolio",
+      },
+      {
+        title: t("items.freelanceros.title"),
+        description: t("items.freelanceros.description"),
+        tags: ["Next.js", "Supabase", "Vercel"],
+        color: "#B7FF03",
+        status: "coming-soon" as const,
+      },
+    ],
+    [t, i18n.language]
+  );
+
+  const featured = useMemo(() => projects.filter((p) => p.image), [projects]);
+  const upcoming = useMemo(
+    () => projects.filter((p) => p.status === "coming-soon"),
+    [projects]
+  );
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -132,7 +135,7 @@ const Projects: React.FC = () => {
       id="projects"
       ref={sectionRef}
       className="relative bg-surface px-6 sm:px-10 lg:px-16 py-20 sm:py-28 lg:py-36"
-      aria-label="Selected projects"
+      aria-label={t("sectionAria")}
     >
       {/* Section header */}
       <div className="mb-16 sm:mb-20 lg:mb-28">
@@ -142,14 +145,14 @@ const Projects: React.FC = () => {
           </span>
           <div className="h-px w-12 bg-border" aria-hidden="true" />
           <span className="font-body text-xs sm:text-sm tracking-[0.3em] uppercase text-text-secondary">
-            Selected Work
+            {t("sectionLabel")}
           </span>
         </div>
         <h2
           className="font-display text-4xl sm:text-5xl lg:text-7xl font-800 tracking-tight text-text-primary"
           style={stagger(0, 0.05)}
         >
-          Projects
+          {t("heading")}
         </h2>
       </div>
 
@@ -230,10 +233,10 @@ const Projects: React.FC = () => {
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex items-center gap-1.5 font-body text-xs sm:text-sm text-text-secondary hover:text-text-primary transition-colors duration-200"
-                          aria-label={project.company ? `View ${project.company} product` : `View live site for ${project.title}`}
+                          aria-label={project.company ? t("viewCompanyProduct", { company: project.company }) : t("viewLiveSite", { title: project.title })}
                         >
                           <FiExternalLink className="w-3.5 h-3.5" />
-                          {project.company ? "View Product" : "Live"}
+                          {project.company ? t("viewProduct") : t("live")}
                         </a>
                       )}
                       {project.repoUrl && (
@@ -242,10 +245,10 @@ const Projects: React.FC = () => {
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex items-center gap-1.5 font-body text-xs sm:text-sm text-text-secondary hover:text-text-primary transition-colors duration-200"
-                          aria-label={`View source code for ${project.title}`}
+                          aria-label={t("viewSource", { title: project.title })}
                         >
                           <FiGithub className="w-3.5 h-3.5" />
-                          Source
+                          {t("source")}
                         </a>
                       )}
                     </div>
@@ -259,12 +262,12 @@ const Projects: React.FC = () => {
                       type="button"
                       onClick={() => setModalProject(project)}
                       className="block w-full h-full cursor-zoom-in focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-lime"
-                      aria-label={`View full screenshot of ${project.title}`}
+                      aria-label={t("viewScreenshot", { title: project.title })}
                     >
                       <div className="relative overflow-hidden h-full">
                         <img
                           src={project.image}
-                          alt={`Screenshot of ${project.title}`}
+                          alt={t("screenshotAlt", { title: project.title })}
                           className="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                           loading="lazy"
                         />
@@ -320,7 +323,7 @@ const Projects: React.FC = () => {
                 <div className="relative z-10 flex flex-col justify-between p-6 sm:p-8 lg:p-10 lg:w-[45%]">
                   <div className="mb-6">
                     <span className="font-body text-[10px] tracking-[0.2em] uppercase whitespace-nowrap px-3 py-1 rounded-full border border-border bg-surface-hover text-text-muted">
-                      Coming Soon
+                      {t("comingSoon")}
                     </span>
                   </div>
 
@@ -368,7 +371,7 @@ const Projects: React.FC = () => {
                       </svg>
                     </div>
                     <span className="font-body text-xs tracking-[0.2em] uppercase text-text-muted">
-                      In Development
+                      {t("inDevelopment")}
                     </span>
                   </div>
                 </div>
@@ -384,7 +387,7 @@ const Projects: React.FC = () => {
           className="fixed inset-0 z-[80] flex items-center justify-center p-4 sm:p-8"
           role="dialog"
           aria-modal="true"
-          aria-label={`Screenshot of ${modalProject.title}`}
+          aria-label={t("screenshotAlt", { title: modalProject.title })}
         >
           {/* Backdrop */}
           <div
@@ -401,7 +404,7 @@ const Projects: React.FC = () => {
               type="button"
               onClick={closeModal}
               className="absolute -top-12 right-0 p-2 text-text-muted hover:text-text-primary transition-colors duration-200"
-              aria-label="Close modal"
+              aria-label={t("closeModal")}
             >
               <FiX className="w-6 h-6" />
             </button>
@@ -410,7 +413,7 @@ const Projects: React.FC = () => {
             <div className="rounded-xl overflow-hidden border border-border">
               <img
                 src={modalProject.image}
-                alt={`Screenshot of ${modalProject.title}`}
+                alt={t("screenshotAlt", { title: modalProject.title })}
                 className="w-full h-auto block"
               />
             </div>
@@ -428,7 +431,7 @@ const Projects: React.FC = () => {
                   className="flex items-center gap-2 font-body text-sm text-text-secondary hover:text-accent-lime transition-colors duration-200"
                 >
                   <FiExternalLink className="w-4 h-4" />
-                  {modalProject.company ? "View Product" : "Visit Site"}
+                  {modalProject.company ? t("viewProduct") : t("visitSite")}
                 </a>
               )}
             </div>

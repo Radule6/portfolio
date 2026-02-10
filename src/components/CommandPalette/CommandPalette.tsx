@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { createPortal } from "react-dom";
+import { useTranslation } from "react-i18next";
 import { FiCommand, FiCornerDownLeft } from "react-icons/fi";
 import {
   filterCommands,
-  CATEGORY_LABELS,
+  createCommands,
+  createCategoryLabels,
   type Command,
   type CommandCategory,
 } from "./commands";
@@ -34,6 +36,7 @@ type PaletteView = "commands" | "terminal";
 /* ── Component ── */
 
 const CommandPalette: React.FC = () => {
+  const { t } = useTranslation("commands");
   const [isOpen, setIsOpen] = useState(false);
   const [view, setView] = useState<PaletteView>("commands");
   const [query, setQuery] = useState("");
@@ -45,7 +48,10 @@ const CommandPalette: React.FC = () => {
   const listRef = useRef<HTMLUListElement>(null);
   const feedbackTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
 
-  const filtered = useMemo(() => filterCommands(query), [query]);
+  const commands = useMemo(() => createCommands(t), [t]);
+  const categoryLabels = useMemo(() => createCategoryLabels(t), [t]);
+
+  const filtered = useMemo(() => filterCommands(query, commands), [query, commands]);
   const groups = useMemo(() => groupByCategory(filtered), [filtered]);
 
   /* Pre-compute flat index map: command id → position in filtered list */
@@ -211,7 +217,7 @@ const CommandPalette: React.FC = () => {
       <div
         role="dialog"
         aria-modal="true"
-        aria-label={isTerminal ? "Terminal" : "Command palette"}
+        aria-label={isTerminal ? t("ui.terminalAria") : t("ui.paletteAria")}
         className={`cmd-palette-dialog fixed inset-0 z-[101] flex items-start justify-center px-4 transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] ${
           isTerminal
             ? "pt-[min(10vh,80px)]"
@@ -273,7 +279,7 @@ const CommandPalette: React.FC = () => {
                     fontFamily:
                       'ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, monospace',
                   }}
-                  placeholder="Type a command..."
+                  placeholder={t("ui.placeholder")}
                   role="combobox"
                   aria-expanded={filtered.length > 0}
                   aria-controls="cmd-palette-list"
@@ -310,7 +316,7 @@ const CommandPalette: React.FC = () => {
                           'ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, monospace',
                       }}
                     >
-                      No commands found
+                      {t("ui.noResults")}
                     </p>
                   </li>
                 ) : (
@@ -392,10 +398,10 @@ const CommandPalette: React.FC = () => {
                         {/* Category header */}
                         <div className="px-5 pt-3 pb-1.5 first:pt-1">
                           <span className="text-[10px] font-body font-500 tracking-[0.2em] uppercase text-text-muted">
-                            {CATEGORY_LABELS[group.category]}
+                            {categoryLabels[group.category]}
                           </span>
                         </div>
-                        <ul role="group" aria-label={CATEGORY_LABELS[group.category]}>
+                        <ul role="group" aria-label={categoryLabels[group.category]}>
                           {groupItems}
                         </ul>
                       </li>
@@ -413,19 +419,19 @@ const CommandPalette: React.FC = () => {
                   <kbd className="inline-flex items-center justify-center w-5 h-5 rounded bg-surface border border-border text-[10px]">
                     {"↓"}
                   </kbd>
-                  <span className="ml-0.5">navigate</span>
+                  <span className="ml-0.5">{t("ui.navigate")}</span>
                 </span>
                 <span className="flex items-center gap-1.5">
                   <kbd className="inline-flex items-center justify-center h-5 px-1.5 rounded bg-surface border border-border text-[10px]">
                     {"↵"}
                   </kbd>
-                  <span className="ml-0.5">select</span>
+                  <span className="ml-0.5">{t("ui.select")}</span>
                 </span>
                 <span className="flex items-center gap-1.5">
                   <kbd className="inline-flex items-center justify-center h-5 px-1.5 rounded bg-surface border border-border text-[10px]">
                     esc
                   </kbd>
-                  <span className="ml-0.5">close</span>
+                  <span className="ml-0.5">{t("ui.close")}</span>
                 </span>
               </div>
             </>
@@ -445,11 +451,13 @@ export function CommandPaletteTrigger({
 }: {
   onClick: () => void;
 }) {
+  const { t } = useTranslation("commands");
+
   return (
     <button
       onClick={onClick}
       className="hidden md:flex items-center gap-2 font-body text-text-muted hover:text-text-secondary border border-border hover:border-border-hover rounded-full px-4 py-2 transition-all duration-300 cursor-pointer"
-      aria-label="Open command palette"
+      aria-label={t("ui.triggerAria")}
     >
       <FiCommand className="w-3.5 h-3.5" />
       <span

@@ -1,0 +1,37 @@
+{
+  "categories": {
+    "navigate": "Navigacija",
+    "action": "Akcije",
+    "social": "Društvene mreže",
+    "easter-egg": "???"
+  },
+  "descriptions": {
+    "home": "Pomakni se na vrh",
+    "about": "Tko sam i čime se bavim",
+    "projects": "Pogledaj što sam izgradio",
+    "contact": "Kontaktiraj me",
+    "theme": "Prebaci između tamne i svijetle teme",
+    "copy-email": "Kopiraj hello@radule.dev u međuspremnik",
+    "github": "github.com/Radule6",
+    "linkedin": "linkedin.com/in/marko-radulovic6",
+    "source": "Pogledaj kako je ova stranica napravljena",
+    "terminal": "Interaktivni terminal za istraživanje stranice",
+    "lang-en": "Postavi jezik sučelja na engleski",
+    "lang-hr": "Postavi jezik sučelja na hrvatski",
+    "lang-de": "Postavi jezik sučelja na njemački"
+  },
+  "feedback": {
+    "theme": "Tema promijenjena",
+    "copyEmail": "Kopirano!"
+  },
+  "ui": {
+    "placeholder": "Upiši naredbu...",
+    "noResults": "Naredbe nisu pronađene",
+    "navigate": "navigiraj",
+    "select": "odaberi",
+    "close": "zatvori",
+    "paletteAria": "Paleta naredbi",
+    "terminalAria": "Terminal",
+    "triggerAria": "Otvori paletu naredbi"
+  }
+}

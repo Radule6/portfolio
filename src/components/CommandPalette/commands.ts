@@ -1,3 +1,5 @@
+import type { TFunction } from "i18next";
+import i18n from "../../i18n";
 import { PERSONAL, THEME_STORAGE_KEY } from "./terminalData";
 
 export type CommandCategory = "navigate" | "action" | "social" | "easter-egg";
@@ -44,110 +46,138 @@ async function copyEmail(): Promise<void> {
   }
 }
 
-export const CATEGORY_LABELS: Record<CommandCategory, string> = {
-  navigate: "Navigation",
-  action: "Actions",
-  social: "Social",
-  "easter-egg": "???",
-};
+export function createCategoryLabels(t: TFunction<"commands">): Record<CommandCategory, string> {
+  return {
+    navigate: t("categories.navigate"),
+    action: t("categories.action"),
+    social: t("categories.social"),
+    "easter-egg": t("categories.easter-egg"),
+  };
+}
 
-export const commands: Command[] = [
-  // ── Navigation ──
-  {
-    id: "home",
-    name: "Go home",
-    description: "Scroll to the top",
-    keywords: ["home", "top", "hero", "start", "beginning"],
-    category: "navigate",
-    action: () => scrollTo("#home"),
-  },
-  {
-    id: "about",
-    name: "About me",
-    description: "Who I am and what I do",
-    keywords: ["about", "bio", "me", "info", "skills", "stack"],
-    category: "navigate",
-    action: () => scrollTo("#about"),
-  },
-  {
-    id: "projects",
-    name: "View projects",
-    description: "See what I've built",
-    keywords: ["projects", "work", "portfolio", "showcase", "built"],
-    category: "navigate",
-    action: () => scrollTo("#projects"),
-  },
-  {
-    id: "contact",
-    name: "Get in touch",
-    description: "Reach out to me",
-    keywords: ["contact", "email", "reach", "hire", "message"],
-    category: "navigate",
-    action: () => scrollTo("#contact"),
-  },
+export function createCommands(t: TFunction<"commands">): Command[] {
+  return [
+    // ── Navigation ──
+    {
+      id: "home",
+      name: "Go home",
+      description: t("descriptions.home"),
+      keywords: ["home", "top", "hero", "start", "beginning"],
+      category: "navigate",
+      action: () => scrollTo("#home"),
+    },
+    {
+      id: "about",
+      name: "About me",
+      description: t("descriptions.about"),
+      keywords: ["about", "bio", "me", "info", "skills", "stack"],
+      category: "navigate",
+      action: () => scrollTo("#about"),
+    },
+    {
+      id: "projects",
+      name: "View projects",
+      description: t("descriptions.projects"),
+      keywords: ["projects", "work", "portfolio", "showcase", "built"],
+      category: "navigate",
+      action: () => scrollTo("#projects"),
+    },
+    {
+      id: "contact",
+      name: "Get in touch",
+      description: t("descriptions.contact"),
+      keywords: ["contact", "email", "reach", "hire", "message"],
+      category: "navigate",
+      action: () => scrollTo("#contact"),
+    },
 
-  // ── Actions ──
-  {
-    id: "theme",
-    name: "Toggle theme",
-    description: "Switch between dark and light mode",
-    keywords: ["theme", "dark", "light", "mode", "toggle", "switch", "color"],
-    category: "action",
-    stayOpen: true,
-    feedback: "Theme switched",
-    action: toggleTheme,
-  },
-  {
-    id: "copy-email",
-    name: "Copy email",
-    description: "Copy hello@radule.dev to clipboard",
-    keywords: ["copy", "email", "clipboard", "address"],
-    category: "action",
-    stayOpen: true,
-    feedback: "Copied!",
-    action: copyEmail,
-  },
+    // ── Actions ──
+    {
+      id: "theme",
+      name: "Toggle theme",
+      description: t("descriptions.theme"),
+      keywords: ["theme", "dark", "light", "mode", "toggle", "switch", "color"],
+      category: "action",
+      stayOpen: true,
+      feedback: t("feedback.theme"),
+      action: toggleTheme,
+    },
+    {
+      id: "copy-email",
+      name: "Copy email",
+      description: t("descriptions.copy-email"),
+      keywords: ["copy", "email", "clipboard", "address"],
+      category: "action",
+      stayOpen: true,
+      feedback: t("feedback.copyEmail"),
+      action: copyEmail,
+    },
+    {
+      id: "lang-en",
+      name: "Switch to English",
+      description: t("descriptions.lang-en"),
+      keywords: ["english", "en", "language", "lang", "engleski", "englisch"],
+      category: "action",
+      action: () => { i18n.changeLanguage("en"); },
+    },
+    {
+      id: "lang-hr",
+      name: "Switch to Croatian",
+      description: t("descriptions.lang-hr"),
+      keywords: ["croatian", "hr", "hrvatski", "language", "lang", "kroatisch"],
+      category: "action",
+      action: () => { i18n.changeLanguage("hr"); },
+    },
+    {
+      id: "lang-de",
+      name: "Switch to German",
+      description: t("descriptions.lang-de"),
+      keywords: ["german", "de", "deutsch", "language", "lang", "njemački"],
+      category: "action",
+      action: () => { i18n.changeLanguage("de"); },
+    },
 
-  // ── Social ──
-  {
-    id: "github",
-    name: "Open GitHub",
-    description: "github.com/Radule6",
-    keywords: ["github", "gh", "code", "repos", "source"],
-    category: "social",
-    action: () => { window.open("https://github.com/Radule6", "_blank", "noopener,noreferrer"); },
-  },
-  {
-    id: "linkedin",
-    name: "Open LinkedIn",
-    description: "linkedin.com/in/marko-radulovic6",
-    keywords: ["linkedin", "connect", "network", "professional"],
-    category: "social",
-    action: () => { window.open("https://www.linkedin.com/in/marko-radulovic6/", "_blank", "noopener,noreferrer"); },
-  },
+    // ── Social ──
+    {
+      id: "github",
+      name: "Open GitHub",
+      description: t("descriptions.github"),
+      keywords: ["github", "gh", "code", "repos", "source"],
+      category: "social",
+      action: () => { window.open("https://github.com/Radule6", "_blank", "noopener,noreferrer"); },
+    },
+    {
+      id: "linkedin",
+      name: "Open LinkedIn",
+      description: t("descriptions.linkedin"),
+      keywords: ["linkedin", "connect", "network", "professional"],
+      category: "social",
+      action: () => { window.open("https://www.linkedin.com/in/marko-radulovic6/", "_blank", "noopener,noreferrer"); },
+    },
 
-  // ── Easter eggs ──
-  {
-    id: "source",
-    name: "View source code",
-    description: "See how this site was built",
-    keywords: ["source", "code", "repo", "repository", "how"],
-    category: "easter-egg",
-    action: () => { window.open("https://github.com/Radule6/portfolio", "_blank", "noopener,noreferrer"); },
-  },
-  {
-    id: "terminal",
-    name: "Open terminal",
-    description: "Interactive terminal to explore this site",
-    keywords: ["terminal", "console", "shell", "cli", "bash", "cmd", "hack"],
-    category: "easter-egg",
-    stayOpen: true,
-    action: () => {},
-  },
-];
+    // ── Easter eggs ──
+    {
+      id: "source",
+      name: "View source code",
+      description: t("descriptions.source"),
+      keywords: ["source", "code", "repo", "repository", "how"],
+      category: "easter-egg",
+      action: () => { window.open("https://github.com/Radule6/portfolio", "_blank", "noopener,noreferrer"); },
+    },
+    {
+      id: "terminal",
+      name: "Open terminal",
+      description: t("descriptions.terminal"),
+      keywords: ["terminal", "console", "shell", "cli", "bash", "cmd", "hack"],
+      category: "easter-egg",
+      stayOpen: true,
+      action: () => {},
+    },
+  ];
+}
 
 /** Simple scored filtering — no external deps needed for ~10 commands */
-export function filterCommands(query: string): Command[] {
+export function filterCommands(query: string, commands: Command[]): Command[] {
   const q = query.toLowerCase().trim();
   if (!q) return commands;
 

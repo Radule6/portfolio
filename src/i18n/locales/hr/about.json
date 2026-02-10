@@ -1,0 +1,13 @@
+{
+  "sectionLabel": "O meni",
+  "heading": "O meni",
+  "sectionAria": "O meni",
+  "paragraph1": "Full-stack sam inženjer koji razvija AI-pogonske podatkovne proizvode za fintech. Specijaliziram se za RAG sustave, agentic AI integracije i produkcijske implementacije koristeći React, Python i AWS — od arhitekture do produkcije.",
+  "paragraph2": "Trenutno radim u Exante Data, gdje gradim RAG-bazirane sustave pretraživanja i automatizirane alate za izvještavanje namijenjene institucionalnim klijentima u financijskoj analitici. Prethodno sam razvijao platforme za grafikone u stvarnom vremenu i sustave ugradivih widgeta u MarketReaderu. Izvan svog posla, radim na odabranim freelance projektima za klijente kojima trebaju pouzdani i kvalitetni web proizvodi.",
+  "techCategories": {
+    "frontend": "Frontend",
+    "backend": "Backend",
+    "aiData": "AI / Podaci",
+    "cloudTools": "Cloud i alati"
+  }
+}

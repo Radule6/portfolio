@@ -1,0 +1,61 @@
+{
+  "welcome": {
+    "title": "Terminal v1.0",
+    "hint": "Upiši <cmd>help</cmd> za popis dostupnih naredbi."
+  },
+  "input": {
+    "placeholder": "Upiši naredbu...",
+    "aria": "Unos u terminal"
+  },
+  "output": {
+    "aria": "Ispis terminala",
+    "suggestionsAria": "Prijedlozi naredbi"
+  },
+  "descriptions": {
+    "help": "Prikaži dostupne naredbe",
+    "about": "Tko sam i čime se bavim",
+    "skills": "Tehnologije i alati",
+    "projects": "Stvari koje sam izgradio",
+    "contact": "Kako me kontaktirati",
+    "experience": "Radno iskustvo",
+    "theme": "Promijeni temu (tamna/svijetla)",
+    "ball": "Gledaj me kako šutiram",
+    "clear": "Očisti terminal",
+    "exit": "Zatvori terminal"
+  },
+  "helpHeading": "Dostupne naredbe:",
+  "unknownCommand": "Naredba nije pronađena: <cmd>{{input}}</cmd>. Upiši <help>help</help> za popis dostupnih naredbi.",
+  "themeSwitched": "Prebačeno na <mode>{{mode}}</mode> način.",
+  "soon": "uskoro",
+  "at": "u",
+  "bio": [
+    "Full-stack inženjer koji razvija AI-pogonske podatkovne proizvode za fintech.",
+    "Specijaliziram se za RAG sustave, agentic AI integracije i produkcijske implementacije koristeći React, Python i AWS — od arhitekture do produkcije."
+  ],
+  "experience": [
+    {
+      "role": "Full Stack inženjer",
+      "company": "Exante Data",
+      "period": "Trenutno",
+      "description": "Razvijam RAG-bazirane sustave pretraživanja i automatizirane alate za izvještavanje namijenjene institucionalnim klijentima u financijskoj analitici."
+    },
+    {
+      "role": "Softverski inženjer",
+      "company": "MarketReader",
+      "period": "Prethodno",
+      "description": "Razvijao platforme za grafikone u stvarnom vremenu i sustave ugradivih widgeta."
+    },
+    {
+      "role": "Freelance",
+      "company": "Nezavisno",
+      "period": "Kontinuirano",
+      "description": "Odabrani freelance projekti za klijente kojima trebaju pouzdani i kvalitetni web proizvodi."
+    }
+  ],
+  "projectDescriptions": {
+    "exante": "RAG-bazirano pretraživanje vlasničkih financijskih podataka",
+    "marketreader": "Interaktivni grafikoni za financijske podatke u stvarnom vremenu",
+    "raduledev": "Ova portfolio stranica",
+    "freelanceros": "Sveobuhvatna platforma za freelancere — fakturiranje, projekti, klijenti"
+  }
+}

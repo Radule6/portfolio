@@ -1,0 +1,13 @@
+{
+  "sectionLabel": "Über mich",
+  "heading": "Über mich",
+  "sectionAria": "Über mich",
+  "paragraph1": "Ich bin Full-Stack-Entwickler und baue AI-gestützte Datenprodukte für Fintech. Ich spezialisiere mich auf RAG-Systeme, Agentic-AI-Integrationen und Produktions-Deployments mit React, Python und AWS — von der Architektur bis zum Deployment.",
+  "paragraph2": "Derzeit bei Exante Data entwickle ich RAG-basierte Suchsysteme und automatisierte Reporting-Tools für institutionelle Kunden in der Finanzanalytik. Zuvor habe ich bei MarketReader Echtzeit-Charting-Plattformen und einbettbare Widget-Systeme aufgebaut. Neben meiner Haupttätigkeit übernehme ich ausgewählte Freelance-Projekte für Kunden, die zuverlässige und hochwertige Webprodukte benötigen.",
+  "techCategories": {
+    "frontend": "Frontend",
+    "backend": "Backend",
+    "aiData": "AI / Daten",
+    "cloudTools": "Cloud & Tools"
+  }
+}

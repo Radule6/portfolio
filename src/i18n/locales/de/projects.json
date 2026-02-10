@@ -1,0 +1,39 @@
+{
+  "sectionLabel": "Ausgewählte Arbeiten",
+  "heading": "Projekte",
+  "sectionAria": "Ausgewählte Projekte",
+  "comingSoon": "Demnächst",
+  "inDevelopment": "In Entwicklung",
+  "viewProduct": "Produkt ansehen",
+  "live": "Live",
+  "source": "Quellcode",
+  "visitSite": "Seite besuchen",
+  "viewScreenshot": "Screenshot von {{title}} ansehen",
+  "viewCompanyProduct": "{{company}}-Produkt ansehen",
+  "viewLiveSite": "Live-Seite von {{title}} ansehen",
+  "viewSource": "Quellcode von {{title}} ansehen",
+  "screenshotAlt": "Screenshot von {{title}}",
+  "closeModal": "Fenster schließen",
+  "items": {
+    "exante": {
+      "title": "Exante Data AI Search",
+      "description": "Ein RAG-basiertes Suchsystem entwickelt, das institutionellen Kunden ermöglicht, proprietäre Finanzdaten in natürlicher Sprache abzufragen. Verantwortlich für die gesamte Full-Stack-Entwicklung — React-Frontend, Python/FastAPI-Backend, PostgreSQL und AWS-Infrastruktur.",
+      "role": "Full-Stack-Entwickler",
+      "company": "Exante Data"
+    },
+    "marketreader": {
+      "title": "MarketReader Dashboard",
+      "description": "Das interaktive Charting-System der Plattform von Grund auf entwickelt — Visualisierung Tausender Finanzdatenpunkte in Echtzeit. End-to-End-Entwicklung des einbettbaren Widget-Systems, das die Reichweite der Plattform auf externe Seiten erweiterte.",
+      "role": "Softwareentwickler",
+      "company": "MarketReader"
+    },
+    "raduledev": {
+      "title": "radule.dev",
+      "description": "Die Seite, die Sie gerade betrachten. Individuelles Portfolio von Grund auf erstellt mit Fokus auf Performance, Animation und Barrierefreiheit. Bereitgestellt über eine GitHub Actions CI/CD-Pipeline."
+    },
+    "freelanceros": {
+      "title": "Freelancer OS",
+      "description": "Eine All-in-One-Plattform für Selbständige — Rechnungsstellung, Projektmanagement und Kunden-Workflows an einem Ort. Entwickelt, um die Vielzahl an Tools zu ersetzen, die Freelancer täglich jonglieren."
+    }
+  }
+}
