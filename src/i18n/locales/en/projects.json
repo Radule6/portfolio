@@ -1,0 +1,39 @@
+{
+  "sectionLabel": "Selected Work",
+  "heading": "Projects",
+  "sectionAria": "Selected projects",
+  "comingSoon": "Coming Soon",
+  "inDevelopment": "In Development",
+  "viewProduct": "View Product",
+  "live": "Live",
+  "source": "Source",
+  "visitSite": "Visit Site",
+  "viewScreenshot": "View full screenshot of {{title}}",
+  "viewCompanyProduct": "View {{company}} product",
+  "viewLiveSite": "View live site for {{title}}",
+  "viewSource": "View source code for {{title}}",
+  "screenshotAlt": "Screenshot of {{title}}",
+  "closeModal": "Close modal",
+  "items": {
+    "exante": {
+      "title": "Exante Data AI Search",
+      "description": "Built a RAG-based search system that enables institutional clients to query proprietary financial datasets using natural language. Responsible for full-stack development across the React frontend, Python/FastAPI backend, PostgreSQL, and AWS infrastructure.",
+      "role": "Full Stack Engineer",
+      "company": "Exante Data"
+    },
+    "marketreader": {
+      "title": "MarketReader Dashboard",
+      "description": "Built the platform's interactive charting system from scratch, visualizing thousands of financial data points in real-time. Owned end-to-end development of the embeddable widget system that expanded platform reach to external sites.",
+      "role": "Software Engineer",
+      "company": "MarketReader"
+    },
+    "raduledev": {
+      "title": "radule.dev",
+      "description": "The site you're looking at. Custom portfolio built from scratch with a focus on performance, animation, and accessibility. Deployed via GitHub Actions CI/CD pipeline."
+    },
+    "freelanceros": {
+      "title": "Freelancer OS",
+      "description": "An all-in-one platform for independent professionals \u2014 invoicing, project management, and client workflows in a single place. Built to replace the patchwork of tools freelancers juggle daily."
+    }
+  }
+}

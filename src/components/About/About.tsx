@@ -1,26 +1,27 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
-// Hoisted outside component — static data (rendering-hoist-jsx)
 const techStack = [
   {
-    label: "Frontend",
+    labelKey: "techCategories.frontend" as const,
     items: ["React", "TypeScript", "HighCharts", "Tailwind CSS"],
   },
   {
-    label: "Backend",
+    labelKey: "techCategories.backend" as const,
     items: ["Python", "FastAPI", "Node.js", "PostgreSQL", "Supabase"],
   },
   {
-    label: "AI / Data",
+    labelKey: "techCategories.aiData" as const,
     items: ["RAG", "LLMs", "OpenAI API", "Vector DBs", "Embeddings", "MCP"],
   },
   {
-    label: "Cloud & Tools",
+    labelKey: "techCategories.cloudTools" as const,
     items: ["AWS", "Git", "CI/CD", "Docker"],
   },
 ] as const;
 
 const About: React.FC = () => {
+  const { t } = useTranslation("about");
   const sectionRef = useRef<HTMLElement>(null);
   const [visible, setVisible] = useState(false);
 
@@ -43,7 +44,7 @@ const About: React.FC = () => {
       id="about"
       ref={sectionRef}
       className="relative bg-surface px-6 sm:px-10 lg:px-16 py-20 sm:py-28 lg:py-36"
-      aria-label="About me"
+      aria-label={t("sectionAria")}
     >
       {/* Section header */}
       <div
@@ -59,7 +60,7 @@ const About: React.FC = () => {
         </span>
         <div className="h-px w-12 bg-border" aria-hidden="true" />
         <span className="font-body text-xs sm:text-sm tracking-[0.3em] uppercase text-text-secondary">
-          About
+          {t("sectionLabel")}
         </span>
       </div>
 
@@ -74,7 +75,7 @@ const About: React.FC = () => {
               transition: "all 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.1s",
             }}
           >
-            About Me
+            {t("heading")}
           </h2>
 
           <p
@@ -85,10 +86,7 @@ const About: React.FC = () => {
               transition: "all 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s",
             }}
           >
-            I'm a full-stack engineer building AI-powered data products for
-            fintech. I specialize in RAG systems, agentic AI integrations, and
-            production deployments across React, Python, and AWS — taking
-            projects from architecture to deployment.
+            {t("paragraph1")}
           </p>
 
           <p
@@ -99,12 +97,7 @@ const About: React.FC = () => {
               transition: "all 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.3s",
             }}
           >
-            Currently at Exante Data, I build RAG-based search systems and
-            automated reporting tools for institutional clients in financial
-            analytics. Previously, I built real-time charting platforms and
-            embeddable widget systems at MarketReader. Outside of my day job, I
-            take on select freelance projects for clients who need reliable,
-            polished web products.
+            {t("paragraph2")}
           </p>
         </div>
 
@@ -119,7 +112,7 @@ const About: React.FC = () => {
         >
           {techStack.map((group, groupIdx) => (
             <div
-              key={group.label}
+              key={group.labelKey}
               style={{
                 opacity: visible ? 1 : 0,
                 transform: visible ? "translateY(0)" : "translateY(15px)",
@@ -127,7 +120,7 @@ const About: React.FC = () => {
               }}
             >
               <span className="font-body text-[11px] tracking-[0.3em] uppercase text-text-muted mb-3 block">
-                {group.label}
+                {t(group.labelKey)}
               </span>
               <div className="flex flex-wrap gap-2">
                 {group.items.map((item) => (

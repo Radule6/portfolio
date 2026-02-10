@@ -1,0 +1,22 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "projects": "Projects",
+    "startProject": "Start Project",
+    "mainNav": "Main navigation",
+    "mobileNav": "Mobile navigation",
+    "goHome": "Go to homepage",
+    "startProjectAria": "Start a new project",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
+  },
+  "footer": {
+    "copyright": "\u00a9 {{year}} All rights reserved."
+  },
+  "theme": {
+    "switchTo": "Switch to {{mode}} theme",
+    "dark": "dark",
+    "light": "light"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "sectionLabel": "Get in Touch",
+  "heading": "Let's build<br/><gradient>something</gradient><br/>together",
+  "sectionAria": "Contact",
+  "description": "Have a project in mind or want to discuss an opportunity? Drop me an email and I'll get back to you.",
+  "copyEmail": "Copy email to clipboard",
+  "emailCopied": "Email copied to clipboard",
+  "socialLinksAria": "Social links",
+  "visitSocial": "Visit {{name}}"
+}

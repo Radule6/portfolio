@@ -1,0 +1,39 @@
+{
+  "sectionLabel": "Odabrani radovi",
+  "heading": "Projekti",
+  "sectionAria": "Odabrani projekti",
+  "comingSoon": "Uskoro",
+  "inDevelopment": "U razvoju",
+  "viewProduct": "Pogledaj proizvod",
+  "live": "Uživo",
+  "source": "Izvorni kod",
+  "visitSite": "Posjeti stranicu",
+  "viewScreenshot": "Pogledaj snimku zaslona projekta {{title}}",
+  "viewCompanyProduct": "Pogledaj proizvod tvrtke {{company}}",
+  "viewLiveSite": "Pogledaj stranicu projekta {{title}}",
+  "viewSource": "Pogledaj izvorni kod projekta {{title}}",
+  "screenshotAlt": "Snimka zaslona projekta {{title}}",
+  "closeModal": "Zatvori prozor",
+  "items": {
+    "exante": {
+      "title": "Exante Data AI Search",
+      "description": "Razvio RAG-bazirani sustav pretraživanja koji institucionalnim klijentima omogućuje upite nad vlasničkim financijskim podacima koristeći prirodni jezik. Odgovoran za cjelokupni full-stack razvoj — React frontend, Python/FastAPI backend, PostgreSQL i AWS infrastruktura.",
+      "role": "Full Stack inženjer",
+      "company": "Exante Data"
+    },
+    "marketreader": {
+      "title": "MarketReader Dashboard",
+      "description": "Razvio interaktivni sustav za grafikone platforme od nule, vizualizirajući tisuće financijskih podataka u stvarnom vremenu. Vodio end-to-end razvoj sustava ugradivih widgeta koji je proširio doseg platforme na vanjske stranice.",
+      "role": "Softverski inženjer",
+      "company": "MarketReader"
+    },
+    "raduledev": {
+      "title": "radule.dev",
+      "description": "Stranica koju upravo gledate. Portfolio izrađen od nule s naglaskom na performanse, animacije i pristupačnost. Objavljeno putem GitHub Actions CI/CD procesa."
+    },
+    "freelanceros": {
+      "title": "Freelancer OS",
+      "description": "Sveobuhvatna platforma za neovisne profesionalce — fakturiranje, upravljanje projektima i radni tijekovi s klijentima na jednom mjestu. Napravljena da zamijeni mnoštvo alata koje freelanceri koriste svakodnevno."
+    }
+  }
+}
