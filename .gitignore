@@ -32,3 +32,4 @@ CLAUDE.md
 .next/
 out/
 next-env.d.ts
+*.tsbuildinfo
