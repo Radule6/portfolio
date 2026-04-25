@@ -61,16 +61,6 @@ const projects = [
     status: "published" as const,
     order: 3,
   },
-  {
-    title: "Freelancer OS",
-    slug: "freelancer-os",
-    description:
-      "An all-in-one platform for independent professionals — invoicing, project management, and client workflows in a single place. Built to replace the patchwork of tools freelancers juggle daily.",
-    tags: [{ label: "Next.js" }, { label: "Supabase" }, { label: "Vercel" }],
-    accentColor: "#B7FF03",
-    status: "coming-soon" as const,
-    order: 4,
-  },
 ]
 
 async function seed() {
