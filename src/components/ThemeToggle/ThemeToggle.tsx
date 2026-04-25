@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { FiSun, FiMoon } from "react-icons/fi";
 
 type Theme = "dark" | "light";
@@ -17,7 +16,6 @@ function getInitialTheme(): Theme {
 
 const ThemeToggle: React.FC = () => {
   const [theme, setTheme] = useState<Theme>(getInitialTheme);
-  const { t } = useTranslation("common");
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
@@ -32,7 +30,7 @@ const ThemeToggle: React.FC = () => {
     <button
       onClick={toggle}
       className="relative w-9 h-9 flex items-center justify-center rounded-full border border-border hover:border-border-hover text-text-secondary hover:text-text-primary transition-all duration-300"
-      aria-label={t("theme.switchTo", { mode: isDark ? t("theme.light") : t("theme.dark") })}
+      aria-label={`Switch to ${isDark ? "light" : "dark"} theme`}
     >
       <span
         className={`absolute transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] ${
