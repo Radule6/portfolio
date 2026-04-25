@@ -31,9 +31,6 @@ function groupByCategory(cmds: Command[]) {
   return groups;
 }
 
-const IS_MAC =
-  typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigator.userAgent);
-
 type PaletteView = "commands" | "terminal";
 
 /* ── Component ── */
@@ -456,6 +453,12 @@ export function CommandPaletteTrigger({
 }: {
   onClick: () => void;
 }) {
+  const [shortcutLabel, setShortcutLabel] = useState("Ctrl+K");
+
+  useEffect(() => {
+    if (/Mac|iPhone|iPad/.test(navigator.userAgent)) setShortcutLabel("⌘K");
+  }, []);
+
   return (
     <button
       onClick={onClick}
@@ -470,7 +473,7 @@ export function CommandPaletteTrigger({
             'ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, monospace',
         }}
       >
-        {IS_MAC ? "⌘K" : "Ctrl+K"}
+        {shortcutLabel}
       </span>
     </button>
   );
