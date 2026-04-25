@@ -1,5 +1,4 @@
 import type { ReactNode } from "react";
-import type { TFunction } from "i18next";
 import { PERSONAL, TECH_STACK, PROJECTS, THEME_STORAGE_KEY } from "./terminalData";
 import AsciiAnimation, { BASKETBALL_FRAMES } from "./AsciiAnimation";
 
@@ -10,24 +9,58 @@ export interface TerminalCommandDef {
   handler: (args: string[]) => ReactNode;
 }
 
-export function createTerminalCommands(t: TFunction<"terminal">): TerminalCommandDef[] {
-  const bio = t("bio", { returnObjects: true }) as string[];
-  const experience = t("experience", { returnObjects: true }) as Array<{
-    role: string;
-    company: string;
-    period: string;
-    description: string;
-  }>;
-  const projectDescriptions = t("projectDescriptions", { returnObjects: true }) as Record<string, string>;
+const BIO: string[] = [
+  "Full-stack engineer building AI-powered data products for fintech.",
+  "Specializing in RAG systems, agentic AI integrations, and production deployments across React, Python, and AWS — taking projects from architecture to deployment.",
+];
 
+interface ExperienceEntry {
+  role: string;
+  company: string;
+  period: string;
+  description: string;
+}
+
+const EXPERIENCE: ExperienceEntry[] = [
+  {
+    role: "Full Stack Engineer",
+    company: "Exante Data",
+    period: "Current",
+    description:
+      "Building RAG-based search systems and automated reporting tools for institutional clients in financial analytics.",
+  },
+  {
+    role: "Software Engineer",
+    company: "MarketReader",
+    period: "Previous",
+    description:
+      "Built real-time charting platforms and embeddable widget systems.",
+  },
+  {
+    role: "Freelance",
+    company: "Independent",
+    period: "Ongoing",
+    description:
+      "Taking on select freelance projects for clients who need reliable, polished web products.",
+  },
+];
+
+const PROJECT_DESCRIPTIONS: Record<string, string> = {
+  exante: "RAG-based search for proprietary financial datasets",
+  marketreader: "Real-time interactive charting for financial data",
+  raduledev: "This portfolio site",
+  freelanceros: "All-in-one platform for freelancers — invoicing, projects, clients",
+};
+
+export function createTerminalCommands(): TerminalCommandDef[] {
   const commands: TerminalCommandDef[] = [
     {
       name: "help",
       aliases: ["?", "commands"],
-      description: t("descriptions.help"),
+      description: "Show available commands",
       handler: () => (
         <div className="space-y-1">
-          <p className="text-text-secondary mb-2">{t("helpHeading")}</p>
+          <p className="text-text-secondary mb-2">Available commands:</p>
           <table className="text-sm">
             <tbody>
               {commands
@@ -47,7 +80,7 @@ export function createTerminalCommands(t: TFunction<"terminal">): TerminalComman
     {
       name: "about",
       aliases: ["whoami", "bio"],
-      description: t("descriptions.about"),
+      description: "Who I am and what I do",
       handler: () => (
         <div className="space-y-2">
           <p className="text-text-primary font-medium">
@@ -55,7 +88,7 @@ export function createTerminalCommands(t: TFunction<"terminal">): TerminalComman
             <span className="text-text-muted">— {PERSONAL.title}</span>
           </p>
           <p className="text-text-muted">{PERSONAL.location}</p>
-          {bio.map((line, i) => (
+          {BIO.map((line, i) => (
             <p key={i} className="text-text-secondary leading-relaxed">
               {line}
             </p>
@@ -67,7 +100,7 @@ export function createTerminalCommands(t: TFunction<"terminal">): TerminalComman
     {
       name: "skills",
       aliases: ["stack", "tech"],
-      description: t("descriptions.skills"),
+      description: "Tech stack and tools",
       handler: () => (
         <div className="space-y-3">
           {TECH_STACK.map((group) => (
@@ -94,22 +127,22 @@ export function createTerminalCommands(t: TFunction<"terminal">): TerminalComman
     {
       name: "projects",
       aliases: ["portfolio"],
-      description: t("descriptions.projects"),
+      description: "Things I've built",
       handler: () => (
         <div className="space-y-3">
           {PROJECTS.map((p) => {
-            const descKey = p.descKey as keyof typeof projectDescriptions;
+            const descKey = p.descKey as keyof typeof PROJECT_DESCRIPTIONS;
             return (
               <div key={p.name}>
                 <div className="flex items-center gap-2">
                   <span className="text-text-primary font-medium">{p.name}</span>
                   {"status" in p && p.status === "coming-soon" && (
                     <span className="text-[10px] tracking-wider uppercase text-text-muted px-1.5 py-0.5 rounded border border-border">
-                      {t("soon")}
+                      soon
                     </span>
                   )}
                 </div>
-                <p className="text-text-muted text-xs mt-0.5">{projectDescriptions[descKey]}</p>
+                <p className="text-text-muted text-xs mt-0.5">{PROJECT_DESCRIPTIONS[descKey]}</p>
                 <div className="flex flex-wrap gap-1 mt-1">
                   {p.tags.map((tag) => (
                     <span key={tag} className="text-[10px] text-text-muted">
@@ -138,7 +171,7 @@ export function createTerminalCommands(t: TFunction<"terminal">): TerminalComman
     {
       name: "contact",
       aliases: ["email", "socials"],
-      description: t("descriptions.contact"),
+      description: "How to reach me",
       handler: () => (
         <div className="space-y-2">
           <div>
@@ -185,14 +218,14 @@ export function createTerminalCommands(t: TFunction<"terminal">): TerminalComman
     {
       name: "experience",
       aliases: ["work", "career", "exp"],
-      description: t("descriptions.experience"),
+      description: "Work experience",
       handler: () => (
         <div className="space-y-3">
-          {experience.map((e, i) => (
+          {EXPERIENCE.map((e, i) => (
             <div key={`${e.company}-${i}`}>
               <div className="flex items-center gap-2">
                 <span className="text-text-primary font-medium">{e.role}</span>
-                <span className="text-text-muted">{t("at")} {e.company}</span>
+                <span className="text-text-muted">at {e.company}</span>
                 <span className="text-[10px] tracking-wider uppercase text-text-muted px-1.5 py-0.5 rounded border border-border">
                   {e.period}
                 </span>
@@ -209,7 +242,7 @@ export function createTerminalCommands(t: TFunction<"terminal">): TerminalComman
     {
       name: "theme",
       aliases: [],
-      description: t("descriptions.theme"),
+      description: "Toggle or set theme (dark/light)",
       handler: (args) => {
         const current = document.documentElement.getAttribute("data-theme");
         let next: string;
@@ -225,18 +258,9 @@ export function createTerminalCommands(t: TFunction<"terminal">): TerminalComman
 
         return (
           <p className="text-text-secondary">
-            {t("themeSwitched", {
-              mode: next,
-              interpolation: { escapeValue: false },
-            })
-              .split(/<mode>|<\/mode>/)
-              .map((part, i) =>
-                i === 1 ? (
-                  <span key={i} className="text-text-primary font-medium">{part}</span>
-                ) : (
-                  part
-                )
-              )}
+            {"Switched to "}
+            <span className="text-text-primary font-medium">{next}</span>
+            {" mode."}
           </p>
         );
       },
@@ -245,7 +269,7 @@ export function createTerminalCommands(t: TFunction<"terminal">): TerminalComman
     {
       name: "ball",
       aliases: ["dunk", "shoot", "basketball"],
-      description: t("descriptions.ball"),
+      description: "Watch me shoot",
       handler: () => (
         <AsciiAnimation frames={BASKETBALL_FRAMES} interval={350} />
       ),
@@ -254,14 +278,14 @@ export function createTerminalCommands(t: TFunction<"terminal">): TerminalComman
     {
       name: "clear",
       aliases: ["cls", "reset"],
-      description: t("descriptions.clear"),
+      description: "Clear terminal",
       handler: () => null, // handled in TerminalMode
     },
 
     {
       name: "exit",
       aliases: ["quit", "close", "q"],
-      description: t("descriptions.exit"),
+      description: "Close terminal",
       handler: () => null, // handled in TerminalMode
     },
   ];
@@ -311,19 +335,14 @@ export function filterTerminalCommands(query: string, commands: TerminalCommandD
 }
 
 /** Response for unknown commands */
-export function unknownCommand(input: string, t: TFunction<"terminal">): ReactNode {
-  const parts = t("unknownCommand", { input }).split(/<cmd>|<\/cmd>|<help>|<\/help>/);
+export function unknownCommand(input: string): ReactNode {
   return (
     <p className="text-text-muted">
-      {parts.map((part, i) =>
-        i === 1 ? (
-          <span key={i} className="text-text-secondary">{part}</span>
-        ) : i === 3 ? (
-          <span key={i} className="text-text-primary">{part}</span>
-        ) : (
-          part
-        )
-      )}
+      {"Command not found: "}
+      <span className="text-text-secondary">{input}</span>
+      {". Type "}
+      <span className="text-text-primary">help</span>
+      {" to see available commands."}
     </p>
   );
 }
