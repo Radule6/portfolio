@@ -1,30 +1,29 @@
-import React, { useEffect, useState } from "react";
-import { FiSun, FiMoon } from "react-icons/fi";
+"use client"
 
-type Theme = "dark" | "light";
-
-const STORAGE_KEY = "radule-theme";
-
-function getInitialTheme(): Theme {
-  if (typeof window === "undefined") return "dark";
-  const stored = localStorage.getItem(STORAGE_KEY);
-  if (stored === "light" || stored === "dark") return stored;
-  return window.matchMedia("(prefers-color-scheme: light)").matches
-    ? "light"
-    : "dark";
-}
+import React, { useEffect, useState } from "react"
+import { useTheme } from "next-themes"
+import { FiSun, FiMoon } from "react-icons/fi"
 
 const ThemeToggle: React.FC = () => {
-  const [theme, setTheme] = useState<Theme>(getInitialTheme);
+  const { resolvedTheme, setTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
 
-  useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
-    localStorage.setItem(STORAGE_KEY, theme);
-  }, [theme]);
+  useEffect(() => setMounted(true), [])
 
-  const toggle = () => setTheme((t) => (t === "dark" ? "light" : "dark"));
+  const isDark = resolvedTheme === "dark"
+  const toggle = () => setTheme(isDark ? "light" : "dark")
 
-  const isDark = theme === "dark";
+  if (!mounted) {
+    return (
+      <button
+        type="button"
+        className="relative w-9 h-9 flex items-center justify-center rounded-full border border-border text-text-secondary transition-all duration-300"
+        aria-label="Toggle theme"
+      >
+        <span className="sr-only">Toggle theme</span>
+      </button>
+    )
+  }
 
   return (
     <button
@@ -51,7 +50,7 @@ const ThemeToggle: React.FC = () => {
         <FiSun className="w-4 h-4" />
       </span>
     </button>
-  );
-};
+  )
+}
 
-export default ThemeToggle;
+export default ThemeToggle
