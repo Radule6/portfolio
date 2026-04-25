@@ -1,4 +1,4 @@
-import config from "@payload-config"
+import config from "../../../../src/payload.config"
 import { NotFoundPage } from "@payloadcms/next/views"
 import { importMap } from "../importMap.js"
 

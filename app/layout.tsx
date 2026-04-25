@@ -1,9 +1,7 @@
 import type { Metadata, Viewport } from "next"
 import { Outfit, Syne } from "next/font/google"
 import "./globals.css"
-import { ThemeProvider } from "@/components/ThemeProvider/ThemeProvider"
 import { siteConfig } from "@/lib/site-config"
-import { personJsonLd } from "@/lib/structured-data"
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -48,18 +46,17 @@ export const viewport: Viewport = {
   initialScale: 1,
 }
 
+// Root layout — only structure (html/body, fonts, default metadata).
+// ThemeProvider and JSON-LD live in app/(frontend)/layout.tsx so they
+// don't wrap the Payload admin (where re-renders trigger script-tag
+// warnings and the theme/JSON-LD aren't relevant anyway).
+//
+// suppressHydrationWarning is required because next-themes (used in
+// the (frontend) layout) mutates <html data-theme> before React hydrates.
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning className={`${outfit.variable} ${syne.variable}`}>
-      <head>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
-        />
-      </head>
-      <body>
-        <ThemeProvider>{children}</ThemeProvider>
-      </body>
+      <body>{children}</body>
     </html>
   )
 }

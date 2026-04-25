@@ -1,4 +1,4 @@
-import config from "@payload-config"
+import config from "../../../../src/payload.config"
 import "@payloadcms/next/css"
 import {
   REST_DELETE,
