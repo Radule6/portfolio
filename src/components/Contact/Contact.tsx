@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
-import { useTranslation, Trans } from "react-i18next";
 import { FiArrowUpRight, FiMail, FiCheck } from "react-icons/fi";
 import { FiCopy } from "react-icons/fi";
 import { FaLinkedin, FaGithub } from "react-icons/fa6";
@@ -14,7 +13,6 @@ const socials = [
 ] as const;
 
 const CopyEmailButton: React.FC = () => {
-  const { t } = useTranslation("contact");
   const [copied, setCopied] = useState(false);
   const [toast, setToast] = useState(false);
   const copiedTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
@@ -69,7 +67,7 @@ const CopyEmailButton: React.FC = () => {
             ? "border-accent-lime text-accent-lime"
             : "border-border text-text-secondary hover:border-border-hover hover:text-text-primary"
         }`}
-        aria-label={t("copyEmail")}
+        aria-label="Copy email to clipboard"
       >
         <span className="relative w-5 h-5">
           <FiCopy
@@ -98,7 +96,7 @@ const CopyEmailButton: React.FC = () => {
         <div className="flex items-center gap-2.5 px-5 py-3 rounded-full bg-surface-raised border border-border shadow-lg shadow-black/20 backdrop-blur-sm">
           <FiCheck className="w-4 h-4 text-accent-lime" />
           <span className="font-body text-sm text-text-primary">
-            {t("emailCopied")}
+            Email copied to clipboard
           </span>
         </div>
       </div>
@@ -107,7 +105,6 @@ const CopyEmailButton: React.FC = () => {
 };
 
 const Contact: React.FC = () => {
-  const { t } = useTranslation("contact");
   const sectionRef = useRef<HTMLElement>(null);
   const [visible, setVisible] = useState(false);
 
@@ -136,7 +133,7 @@ const Contact: React.FC = () => {
       id="contact"
       ref={sectionRef}
       className="relative bg-surface px-6 sm:px-10 lg:px-16 py-20 sm:py-28 lg:py-36 overflow-hidden"
-      aria-label={t("sectionAria")}
+      aria-label="Contact"
     >
       {/* Noise texture */}
       <div className="hero-noise absolute inset-0 pointer-events-none z-[2]" aria-hidden="true" />
@@ -159,7 +156,7 @@ const Contact: React.FC = () => {
           </span>
           <div className="h-px w-12 bg-border" aria-hidden="true" />
           <span className="font-body text-xs sm:text-sm tracking-[0.3em] uppercase text-text-secondary">
-            {t("sectionLabel")}
+            Get in Touch
           </span>
         </div>
 
@@ -168,21 +165,14 @@ const Contact: React.FC = () => {
           className="font-display text-[11vw] sm:text-[7.5vw] lg:text-[5vw] font-800 leading-[1.05] tracking-[-0.03em] text-text-primary mb-6 sm:mb-8"
           style={stagger(0.1)}
         >
-          <Trans
-            i18nKey="heading"
-            ns="contact"
-            components={{
-              gradient: <span className="gradient-text" />,
-              "br/": <br />,
-            }}
-          />
+          Let&apos;s build<br /><span className="gradient-text">something</span><br />together
         </h2>
 
         <p
           className="font-body text-base sm:text-lg text-text-secondary max-w-lg leading-relaxed mb-10 sm:mb-14"
           style={stagger(0.2)}
         >
-          {t("description")}
+          Have a project in mind or want to discuss an opportunity? Drop me an email and I&apos;ll get back to you.
         </p>
 
         {/* Email CTA */}
@@ -205,7 +195,7 @@ const Contact: React.FC = () => {
           className="mt-12 sm:mt-16 pt-8 sm:pt-10 border-t border-border"
           style={stagger(0.4)}
         >
-          <nav aria-label={t("socialLinksAria")}>
+          <nav aria-label="Social links">
             <ul className="flex gap-4">
               {socials.map((social) => (
                 <li key={social.name}>
@@ -214,7 +204,7 @@ const Contact: React.FC = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="group flex items-center gap-2 font-body text-sm text-text-secondary hover:text-text-primary border border-border hover:border-border-hover rounded-full px-4 py-2 transition-all duration-300"
-                    aria-label={t("visitSocial", { name: social.name })}
+                    aria-label={`Visit ${social.name}`}
                   >
                     <social.icon className="w-4 h-4" />
                     {social.name}
