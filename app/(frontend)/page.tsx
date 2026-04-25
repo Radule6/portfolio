@@ -1,7 +1,7 @@
 import Navigation from "@/components/Navigation/Navigation"
 import Hero from "@/components/Hero/Hero"
 import About from "@/components/About/About"
-import Projects from "@/components/Projects/Projects"
+import ProjectsServer from "@/components/Projects/ProjectsServer"
 import Contact from "@/components/Contact/Contact"
 import Footer from "@/components/Footer/Footer"
 import Preloader from "@/components/Preloader/Preloader"
@@ -16,7 +16,7 @@ export default function HomePage() {
         <main>
           <Hero />
           <About />
-          <Projects />
+          <ProjectsServer />
           <Contact />
         </main>
         <Footer />

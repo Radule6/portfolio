@@ -3,10 +3,12 @@
 
 import React, { useCallback, useEffect, useRef, useState, useMemo } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { FiExternalLink, FiGithub, FiX } from "react-icons/fi";
 
-interface Project {
+export interface Project {
   title: string;
+  slug?: string;
   description: string;
   tags: string[];
   color: string;
@@ -16,61 +18,16 @@ interface Project {
   repoUrl?: string;
   company?: string;
   role?: string;
+  hasBody?: boolean;
 }
 
-const Projects: React.FC = () => {
+const Projects: React.FC<{ projects: Project[] }> = ({ projects }) => {
   const sectionRef = useRef<HTMLElement>(null);
   const [visible, setVisible] = useState(false);
   const [modalProject, setModalProject] = useState<Project | null>(null);
   const modalCloseRef = useRef<HTMLButtonElement>(null);
   const modalDialogRef = useRef<HTMLDivElement>(null);
   const returnFocusRef = useRef<HTMLElement | null>(null);
-
-  const projects: Project[] = useMemo(
-    () => [
-      {
-        title: "Exante Data AI Search",
-        description:
-          "Built a RAG-based search system that enables institutional clients to query proprietary financial datasets using natural language. Responsible for full-stack development across the React frontend, Python/FastAPI backend, PostgreSQL, and AWS infrastructure.",
-        tags: ["React", "FastAPI", "PostgreSQL", "AWS", "RAG"],
-        color: "#59FFCE",
-        company: "Exante Data",
-        role: "Full Stack Engineer",
-        image: "/projects/exante-data.png",
-        liveUrl: "https://ai.exantedata.com/",
-      },
-      {
-        title: "MarketReader Dashboard",
-        description:
-          "Built the platform's interactive charting system from scratch, visualizing thousands of financial data points in real-time. Owned end-to-end development of the embeddable widget system that expanded platform reach to external sites.",
-        tags: ["React", "TypeScript", "HighCharts", "Python"],
-        color: "#B7FF03",
-        company: "MarketReader",
-        role: "Software Engineer",
-        image: "/projects/marketreader.png",
-        liveUrl: "https://app.marketreader.com/",
-      },
-      {
-        title: "radule.dev",
-        description:
-          "The site you're looking at. Custom portfolio built from scratch with a focus on performance, animation, and accessibility. Deployed via GitHub Actions CI/CD pipeline.",
-        tags: ["React", "TypeScript", "Tailwind CSS", "Vite"],
-        color: "#59FFCE",
-        image: "/projects/radule-dev.png",
-        liveUrl: "https://radule.dev",
-        repoUrl: "https://github.com/Radule6/portfolio",
-      },
-      {
-        title: "Freelancer OS",
-        description:
-          "An all-in-one platform for independent professionals — invoicing, project management, and client workflows in a single place. Built to replace the patchwork of tools freelancers juggle daily.",
-        tags: ["Next.js", "Supabase", "Vercel"],
-        color: "#B7FF03",
-        status: "coming-soon" as const,
-      },
-    ],
-    []
-  );
 
   const featured = useMemo(() => projects.filter((p) => p.image), [projects]);
   const upcoming = useMemo(
@@ -210,9 +167,20 @@ const Projects: React.FC = () => {
                       {String(idx + 1).padStart(2, "0")}
                     </span>
 
-                    <h3 className="font-display text-2xl sm:text-3xl lg:text-4xl font-700 text-text-primary mb-3 tracking-tight">
-                      {project.title}
-                    </h3>
+                    {project.hasBody && project.slug ? (
+                      <Link
+                        href={`/projects/${project.slug}`}
+                        className="group/title inline-block mb-3"
+                      >
+                        <h3 className="font-display text-2xl sm:text-3xl lg:text-4xl font-700 text-text-primary tracking-tight transition-colors duration-200 group-hover/title:text-accent-lime">
+                          {project.title}
+                        </h3>
+                      </Link>
+                    ) : (
+                      <h3 className="font-display text-2xl sm:text-3xl lg:text-4xl font-700 text-text-primary mb-3 tracking-tight">
+                        {project.title}
+                      </h3>
+                    )}
 
                     <p className="font-body text-sm sm:text-base text-text-secondary leading-relaxed mb-6 max-w-lg">
                       {project.description}
