@@ -1,5 +1,4 @@
-"use client";
-
+"use client"
 
 import React, { useCallback, useEffect, useRef, useState, useMemo } from "react";
 import { FiExternalLink, FiGithub, FiX } from "react-icons/fi";

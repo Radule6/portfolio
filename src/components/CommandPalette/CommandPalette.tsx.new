@@ -1,9 +1,7 @@
-"use client";
-
+"use client"
 
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { createPortal } from "react-dom";
-import { useTheme } from "next-themes";
 import { FiCommand, FiCornerDownLeft } from "react-icons/fi";
 import {
   filterCommands,
@@ -39,7 +37,6 @@ type PaletteView = "commands" | "terminal";
 /* ── Component ── */
 
 const CommandPalette: React.FC = () => {
-  const { resolvedTheme, setTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
   const [view, setView] = useState<PaletteView>("commands");
   const [query, setQuery] = useState("");
@@ -140,12 +137,7 @@ const CommandPalette: React.FC = () => {
         return;
       }
 
-      // Special: theme toggle uses next-themes hook to stay in sync with the rest of the app
-      if (cmd.id === "theme") {
-        setTheme(resolvedTheme === "light" ? "dark" : "light");
-      } else {
-        await cmd.action();
-      }
+      await cmd.action();
 
       if (cmd.stayOpen && cmd.feedback) {
         showFeedback(cmd.id, cmd.feedback);
@@ -155,7 +147,7 @@ const CommandPalette: React.FC = () => {
         close();
       }
     },
-    [close, showFeedback, resolvedTheme, setTheme]
+    [close, showFeedback]
   );
 
   /* ── Keyboard navigation inside palette ── */

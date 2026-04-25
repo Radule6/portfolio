@@ -1,4 +1,4 @@
-import { PERSONAL, THEME_STORAGE_KEY } from "./terminalData";
+import { PERSONAL } from "./terminalData";
 
 export type CommandCategory = "navigate" | "action" | "social" | "easter-egg";
 
@@ -20,13 +20,6 @@ const EMAIL = PERSONAL.email;
 
 function scrollTo(selector: string) {
   document.querySelector(selector)?.scrollIntoView({ behavior: "smooth", block: "start" });
-}
-
-function toggleTheme() {
-  const current = document.documentElement.getAttribute("data-theme");
-  const next = current === "light" ? "dark" : "light";
-  document.documentElement.setAttribute("data-theme", next);
-  localStorage.setItem(THEME_STORAGE_KEY, next);
 }
 
 async function copyEmail(): Promise<void> {
@@ -95,7 +88,7 @@ export const COMMANDS: Command[] = [
     category: "action",
     stayOpen: true,
     feedback: "Theme switched",
-    action: toggleTheme,
+    action: () => {},
   },
   {
     id: "copy-email",

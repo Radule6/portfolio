@@ -1,8 +1,6 @@
-"use client";
-
+"use client"
 
 import { useState, useEffect, useRef, useCallback, useMemo, type ReactNode } from "react";
-import { useTheme } from "next-themes";
 import {
   createTerminalCommands,
   findCommand,
@@ -44,12 +42,8 @@ const welcomeMessage: ReactNode = (
 const TerminalMode: React.FC<TerminalModeProps> = ({ onExit }) => {
   const [ready, setReady] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const { resolvedTheme, setTheme } = useTheme();
 
-  const terminalCommands = useMemo(
-    () => createTerminalCommands({ resolvedTheme, setTheme }),
-    [resolvedTheme, setTheme]
-  );
+  const terminalCommands = useMemo(() => createTerminalCommands(), []);
 
   const [history, setHistory] = useState<TerminalEntry[]>([
     { id: 0, command: null, output: welcomeMessage },

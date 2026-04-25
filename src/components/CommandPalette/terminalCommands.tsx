@@ -1,6 +1,11 @@
 import type { ReactNode } from "react";
-import { PERSONAL, TECH_STACK, PROJECTS, THEME_STORAGE_KEY } from "./terminalData";
+import { PERSONAL, TECH_STACK, PROJECTS } from "./terminalData";
 import AsciiAnimation, { BASKETBALL_FRAMES } from "./AsciiAnimation";
+
+export interface ThemeBridge {
+  resolvedTheme: string | undefined;
+  setTheme: (theme: string) => void;
+}
 
 export interface TerminalCommandDef {
   name: string;
@@ -52,7 +57,7 @@ const PROJECT_DESCRIPTIONS: Record<string, string> = {
   freelanceros: "All-in-one platform for freelancers — invoicing, projects, clients",
 };
 
-export function createTerminalCommands(): TerminalCommandDef[] {
+export function createTerminalCommands(theme: ThemeBridge): TerminalCommandDef[] {
   const commands: TerminalCommandDef[] = [
     {
       name: "help",
@@ -244,7 +249,7 @@ export function createTerminalCommands(): TerminalCommandDef[] {
       aliases: [],
       description: "Toggle or set theme (dark/light)",
       handler: (args) => {
-        const current = document.documentElement.getAttribute("data-theme");
+        const current = theme.resolvedTheme;
         let next: string;
 
         if (args[0] === "dark" || args[0] === "light") {
@@ -253,8 +258,7 @@ export function createTerminalCommands(): TerminalCommandDef[] {
           next = current === "light" ? "dark" : "light";
         }
 
-        document.documentElement.setAttribute("data-theme", next);
-        localStorage.setItem(THEME_STORAGE_KEY, next);
+        theme.setTheme(next);
 
         return (
           <p className="text-text-secondary">
