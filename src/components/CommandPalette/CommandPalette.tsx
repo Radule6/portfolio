@@ -5,6 +5,7 @@ import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { useTheme } from "next-themes";
 import { FiCommand, FiCornerDownLeft } from "react-icons/fi";
+import { useIsClient } from "@/lib/use-is-client";
 import {
   filterCommands,
   COMMANDS,
@@ -106,11 +107,13 @@ const CommandPalette: React.FC = () => {
     }
   }, [isOpen, view]);
 
-  /* ── Reset selection when query changes ── */
+  /* ── Reset selection when query changes (derived-state pattern: track prev query during render) ── */
 
-  useEffect(() => {
+  const [prevQuery, setPrevQuery] = useState(query);
+  if (prevQuery !== query) {
+    setPrevQuery(query);
     setSelectedIndex(0);
-  }, [query]);
+  }
 
   /* ── Show inline feedback for a command ── */
 
@@ -198,11 +201,13 @@ const CommandPalette: React.FC = () => {
     };
   }, []);
 
-  /* ── Clear feedback when palette closes ── */
+  /* ── Clear feedback when palette closes (derived-state pattern) ── */
 
-  useEffect(() => {
+  const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
+  if (prevIsOpen !== isOpen) {
+    setPrevIsOpen(isOpen);
     if (!isOpen) setFeedbackMap({});
-  }, [isOpen]);
+  }
 
   if (!isOpen) return null;
 
@@ -453,11 +458,9 @@ export function CommandPaletteTrigger({
 }: {
   onClick: () => void;
 }) {
-  const [shortcutLabel, setShortcutLabel] = useState("Ctrl+K");
-
-  useEffect(() => {
-    if (/Mac|iPhone|iPad/.test(navigator.userAgent)) setShortcutLabel("⌘K");
-  }, []);
+  const isClient = useIsClient();
+  const isMac = isClient && /Mac|iPhone|iPad/.test(navigator.userAgent);
+  const shortcutLabel = isMac ? "⌘K" : "Ctrl+K";
 
   return (
     <button

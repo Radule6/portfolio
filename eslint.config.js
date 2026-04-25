@@ -9,7 +9,11 @@ export default defineConfig([
     ".next/**",
     "out/**",
     "build/**",
+    "dist/**",
     "node_modules/**",
     "next-env.d.ts",
+    "app/(payload)/admin/importMap.js",
+    "src/payload/migrations/**",
+    "src/payload-types.ts",
   ]),
 ])

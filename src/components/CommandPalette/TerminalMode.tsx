@@ -58,8 +58,12 @@ const TerminalMode: React.FC<TerminalModeProps> = ({ onExit }) => {
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
 
-  const [suggestions, setSuggestions] = useState<TerminalCommandDef[]>([]);
   const [suggestionIndex, setSuggestionIndex] = useState(-1);
+  // When suggestions are explicitly dismissed (escape, accept), we store the
+  // exact input value they were dismissed for. As soon as the user types more
+  // (inputValue changes), the dismissal no longer matches and suggestions
+  // reappear naturally — without an effect.
+  const [suggestionsDismissedFor, setSuggestionsDismissedFor] = useState<string | null>(null);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLUListElement>(null);
@@ -70,14 +74,20 @@ const TerminalMode: React.FC<TerminalModeProps> = ({ onExit }) => {
     if (ready) requestAnimationFrame(() => inputRef.current?.focus());
   }, [ready]);
 
-  /* ── Recompute autocomplete suggestions (capped to visible max) ── */
+  /* ── Autocomplete suggestions (derived from input) ── */
   const MAX_SUGGESTIONS = 6;
-  useEffect(() => {
+  const computedSuggestions = useMemo(() => {
     const firstWord = inputValue.split(/\s+/)[0] ?? "";
-    const matches = filterTerminalCommands(firstWord, terminalCommands).slice(0, MAX_SUGGESTIONS);
-    setSuggestions(matches);
-    setSuggestionIndex(-1);
+    return filterTerminalCommands(firstWord, terminalCommands).slice(0, MAX_SUGGESTIONS);
   }, [inputValue, terminalCommands]);
+  const suggestions = suggestionsDismissedFor === inputValue ? [] : computedSuggestions;
+
+  /* ── Reset suggestion index when input changes (derived-state, prev-pattern) ── */
+  const [prevInputValue, setPrevInputValue] = useState(inputValue);
+  if (prevInputValue !== inputValue) {
+    setPrevInputValue(inputValue);
+    setSuggestionIndex(-1);
+  }
 
   /* ── Scroll active suggestion into view ── */
   useEffect(() => {
@@ -145,8 +155,9 @@ const TerminalMode: React.FC<TerminalModeProps> = ({ onExit }) => {
   /* ── Accept a suggestion into the input ── */
   const acceptSuggestion = useCallback(
     (cmd: TerminalCommandDef) => {
-      setInputValue(cmd.name + " ");
-      setSuggestions([]);
+      const next = cmd.name + " ";
+      setInputValue(next);
+      setSuggestionsDismissedFor(next);
       setSuggestionIndex(-1);
       inputRef.current?.focus();
     },
@@ -181,7 +192,7 @@ const TerminalMode: React.FC<TerminalModeProps> = ({ onExit }) => {
       if (e.key === "Escape") {
         e.preventDefault();
         if (hasSuggestions) {
-          setSuggestions([]);
+          setSuggestionsDismissedFor(inputValue);
           setSuggestionIndex(-1);
         } else {
           onExit();

@@ -1,14 +1,13 @@
 "use client"
 
-import React, { useEffect, useState } from "react"
+import React from "react"
 import { useTheme } from "next-themes"
 import { FiSun, FiMoon } from "react-icons/fi"
+import { useIsClient } from "@/lib/use-is-client"
 
 const ThemeToggle: React.FC = () => {
   const { resolvedTheme, setTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => setMounted(true), [])
+  const mounted = useIsClient()
 
   const isDark = resolvedTheme === "dark"
   const toggle = () => setTheme(isDark ? "light" : "dark")
