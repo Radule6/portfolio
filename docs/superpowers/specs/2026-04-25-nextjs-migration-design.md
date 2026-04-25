@@ -189,7 +189,17 @@ Bucket: `portfolio-media`, public read, authenticated write. Payload's S3 plugin
 
 ## 9. Infrastructure
 
-**Vercel project:** new project pointed at this repo. Build command: `next build`. Install: `npm ci`.
+**Vercel project:** new project pointed at this repo. **Vercel's Git auto-deploy is disabled.** Deploys happen exclusively via the GitHub Actions workflow described below — this gates production deploys on a passing CI build.
+
+**GitHub Actions deploy gate:** A new workflow `.github/workflows/deploy.yml` (replacing the FTP-to-Hostinger one in Plan 5) runs on every push to `main` and on every PR. The workflow steps:
+
+1. Install dependencies (`npm ci`)
+2. `npm run lint` — must pass
+3. `npm run typecheck` — must pass
+4. `npm run build` — must pass
+5. **Only if all of the above pass:** install Vercel CLI, `vercel pull --environment=preview` (or `production` on `main`), `vercel build --prebuilt`, `vercel deploy --prebuilt` (add `--prod` on `main`)
+
+Required GitHub repo secrets: `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`. The workflow uses `--prebuilt` so Vercel doesn't re-run the build it already trusted. A failing lint/typecheck/build means no Vercel deploy happens at all — the failed GHA run shows up as a PR check, and `main` stays on its previous deployment.
 
 **Environment variables (Vercel):**
 - `DATABASE_URL` — Supabase Postgres connection string (pooled, port 6543, with `?pgbouncer=true`)
