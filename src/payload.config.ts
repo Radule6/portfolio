@@ -20,6 +20,13 @@ export default buildConfig({
     meta: {
       title: "RADULE.DEV admin",
       description: "Manage projects and posts",
+      icons: [{ rel: "icon", type: "image/png", url: "/favicon.png" }],
+    },
+    components: {
+      graphics: {
+        Logo: "/src/payload/components/Logo#default",
+        Icon: "/src/payload/components/Icon#default",
+      },
     },
   },
   collections: [Users, Media, Projects, Posts],
