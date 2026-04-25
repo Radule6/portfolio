@@ -2,6 +2,7 @@
 
 
 import React, { useCallback, useEffect, useRef, useState, useMemo } from "react";
+import Image from "next/image";
 import { FiExternalLink, FiGithub, FiX } from "react-icons/fi";
 
 interface Project {
@@ -269,12 +270,13 @@ const Projects: React.FC = () => {
                       className="block w-full h-full cursor-zoom-in focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-lime"
                       aria-label={`View full screenshot of ${project.title}`}
                     >
-                      <div className="relative overflow-hidden h-full">
-                        <img
+                      <div className="relative overflow-hidden h-full min-h-[260px]">
+                        <Image
                           src={project.image}
                           alt={`Screenshot of ${project.title}`}
-                          className="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-[1.03]"
-                          loading="lazy"
+                          fill
+                          sizes="(min-width: 1024px) 55vw, 100vw"
+                          className="object-cover object-top transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                         />
                         {/* Gradient fade into text side */}
                         <div
@@ -416,10 +418,14 @@ const Projects: React.FC = () => {
 
             {/* Image */}
             <div className="rounded-xl overflow-hidden border border-border">
-              <img
-                src={modalProject.image}
+              <Image
+                src={modalProject.image!}
                 alt={`Screenshot of ${modalProject.title}`}
+                width={1905}
+                height={937}
+                sizes="(min-width: 1024px) 1024px, 100vw"
                 className="w-full h-auto block"
+                priority
               />
             </div>
 
