@@ -2,8 +2,8 @@
 @layer theme, base, components, utilities;
 
 @theme {
-  --font-display: "Syne", sans-serif;
-  --font-body: "Outfit", sans-serif;
+  --font-display: var(--font-syne), "Syne", sans-serif;
+  --font-body: var(--font-outfit), "Outfit", sans-serif;
   --color-surface: #0a0a0a;
   --color-surface-raised: #141414;
   --color-surface-hover: #1a1a1a;
