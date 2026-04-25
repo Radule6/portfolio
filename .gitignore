@@ -33,3 +33,7 @@ CLAUDE.md
 out/
 next-env.d.ts
 *.tsbuildinfo
+
+# Vercel
+.vercel
+.env*.local
