@@ -7,7 +7,6 @@ import Contact from "./components/Contact/Contact";
 import Footer from "./components/Footer/Footer";
 import Preloader from "./components/Preloader/Preloader";
 import CommandPalette from "./components/CommandPalette/CommandPalette";
-import MetaUpdater from "./components/MetaUpdater/MetaUpdater";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -15,7 +14,6 @@ function App() {
 
   return (
     <>
-      <MetaUpdater />
       {loading && <Preloader onComplete={handlePreloaderComplete} />}
       <div className="bg-surface min-h-screen">
         <Navigation />
