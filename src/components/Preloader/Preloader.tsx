@@ -8,17 +8,33 @@ const LOGO_ACCENT = ".DEV";
 const LETTER_STAGGER = 60;
 const HOLD_DURATION = 1000;
 const EXIT_DURATION = 700;
+const SESSION_FLAG = "radule-preloader-shown";
 
 const Preloader: React.FC<{ onComplete?: () => void }> = ({ onComplete }) => {
   const [phase, setPhase] = useState<"enter" | "hold" | "exit" | "done">("enter");
 
   useEffect(() => {
+    // Splash plays once per browser session. On subsequent client navigations
+    // (home → blog → home, etc.) the flag is set, so we skip straight to done.
+    if (typeof sessionStorage !== "undefined" && sessionStorage.getItem(SESSION_FLAG) === "1") {
+      const skipTimer = setTimeout(() => {
+        setPhase("done");
+        onComplete?.();
+      }, 0);
+      return () => clearTimeout(skipTimer);
+    }
+
     const enterTime = LOGO_TEXT.length * LETTER_STAGGER + LOGO_ACCENT.length * LETTER_STAGGER + 400;
 
     const holdTimer = setTimeout(() => setPhase("hold"), enterTime);
     const exitTimer = setTimeout(() => setPhase("exit"), enterTime + HOLD_DURATION);
     const doneTimer = setTimeout(() => {
       setPhase("done");
+      try {
+        sessionStorage.setItem(SESSION_FLAG, "1");
+      } catch {
+        /* sessionStorage can throw in private mode — fall through */
+      }
       onComplete?.();
     }, enterTime + HOLD_DURATION + EXIT_DURATION);
 

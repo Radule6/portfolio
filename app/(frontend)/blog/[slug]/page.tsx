@@ -5,6 +5,7 @@ import config from "@payload-config"
 import { siteConfig } from "@/lib/site-config"
 import Navigation from "@/components/Navigation/Navigation"
 import Footer from "@/components/Footer/Footer"
+import CommandPalette from "@/components/CommandPalette/CommandPalette"
 import BlogPost from "@/components/Blog/BlogPost"
 import { extractToc } from "@/lib/blog-toc"
 import type { Media } from "@/payload-types"
@@ -85,10 +86,15 @@ export default async function PostPage({ params }: { params: Promise<Params> }) 
   const body = extracted?.data ?? post.body
 
   return (
-    <div className="bg-surface min-h-screen">
-      <Navigation />
-      <BlogPost post={post} toc={toc} body={body} />
-      <Footer />
-    </div>
+    <>
+      <div className="bg-surface min-h-screen flex flex-col">
+        <Navigation />
+        <div className="flex-1">
+          <BlogPost post={post} toc={toc} body={body} />
+        </div>
+        <Footer />
+      </div>
+      <CommandPalette />
+    </>
   )
 }

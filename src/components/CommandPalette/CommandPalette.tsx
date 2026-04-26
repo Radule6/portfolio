@@ -459,7 +459,12 @@ export function CommandPaletteTrigger({
   onClick: () => void;
 }) {
   const isClient = useIsClient();
-  const isMac = isClient && /Mac|iPhone|iPad/.test(navigator.userAgent);
+  const isMac =
+    isClient &&
+    (/Mac|iPhone|iPad/i.test(navigator.userAgent) ||
+      (typeof navigator.platform === "string" && navigator.platform.startsWith("Mac")) ||
+      (navigator as Navigator & { userAgentData?: { platform?: string } }).userAgentData?.platform ===
+        "macOS");
   const shortcutLabel = isMac ? "⌘K" : "Ctrl+K";
 
   return (

@@ -28,10 +28,10 @@ export default function BlogList({ docs, page, totalPages }: Props) {
   return (
     <section
       id="blog"
-      className="relative bg-surface px-6 sm:px-10 lg:px-16 py-20 sm:py-28 lg:py-36"
+      className="relative bg-surface px-6 sm:px-10 lg:px-16 pt-32 sm:pt-36 lg:pt-40 pb-20 sm:pb-24 lg:pb-28"
       aria-label="Blog listing"
     >
-      <div className="mb-16 sm:mb-20 lg:mb-24">
+      <div className="mb-12 sm:mb-16">
         <div className="flex items-center gap-4 mb-4">
           <span className="font-body text-xs sm:text-sm tracking-[0.3em] uppercase text-text-muted">
             04
@@ -41,10 +41,10 @@ export default function BlogList({ docs, page, totalPages }: Props) {
             Writing
           </span>
         </div>
-        <h1 className="font-display text-4xl sm:text-5xl lg:text-7xl font-800 tracking-tight text-text-primary">
+        <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-800 tracking-tight text-text-primary">
           Blog
         </h1>
-        <p className="mt-6 max-w-2xl font-body text-base sm:text-lg text-text-secondary leading-relaxed">
+        <p className="mt-4 max-w-2xl font-body text-base sm:text-lg text-text-secondary leading-relaxed">
           Notes on AI engineering, full-stack development, and the tools I build with.
         </p>
       </div>

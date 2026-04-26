@@ -3,6 +3,7 @@ import Script from "next/script"
 import { Outfit, Syne } from "next/font/google"
 import "../globals.css"
 import { ThemeProvider } from "@/components/ThemeProvider/ThemeProvider"
+import Preloader from "@/components/Preloader/Preloader"
 import { siteConfig } from "@/lib/site-config"
 import { personJsonLd } from "@/lib/structured-data"
 
@@ -60,7 +61,10 @@ export default function FrontendLayout({ children }: { children: React.ReactNode
   return (
     <html lang="en" suppressHydrationWarning className={`${outfit.variable} ${syne.variable}`}>
       <body>
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <Preloader />
+          {children}
+        </ThemeProvider>
         <Script
           id="ld-json-person"
           type="application/ld+json"

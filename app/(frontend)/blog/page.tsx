@@ -4,6 +4,7 @@ import config from "@payload-config"
 import { siteConfig } from "@/lib/site-config"
 import Navigation from "@/components/Navigation/Navigation"
 import Footer from "@/components/Footer/Footer"
+import CommandPalette from "@/components/CommandPalette/CommandPalette"
 import BlogList from "@/components/Blog/BlogList"
 
 const POSTS_PER_PAGE = 10
@@ -56,12 +57,15 @@ export default async function BlogPage({
   })
 
   return (
-    <div className="bg-surface min-h-screen">
-      <Navigation />
-      <main>
-        <BlogList docs={result.docs} page={page} totalPages={result.totalPages} />
-      </main>
-      <Footer />
-    </div>
+    <>
+      <div className="bg-surface min-h-screen flex flex-col">
+        <Navigation />
+        <main className="flex-1">
+          <BlogList docs={result.docs} page={page} totalPages={result.totalPages} />
+        </main>
+        <Footer />
+      </div>
+      <CommandPalette />
+    </>
   )
 }
