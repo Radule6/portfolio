@@ -1,38 +1,34 @@
-import React, { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { FiSun, FiMoon } from "react-icons/fi";
+"use client"
 
-type Theme = "dark" | "light";
-
-const STORAGE_KEY = "radule-theme";
-
-function getInitialTheme(): Theme {
-  if (typeof window === "undefined") return "dark";
-  const stored = localStorage.getItem(STORAGE_KEY);
-  if (stored === "light" || stored === "dark") return stored;
-  return window.matchMedia("(prefers-color-scheme: light)").matches
-    ? "light"
-    : "dark";
-}
+import React from "react"
+import { useTheme } from "next-themes"
+import { FiSun, FiMoon } from "react-icons/fi"
+import { useIsClient } from "@/lib/use-is-client"
 
 const ThemeToggle: React.FC = () => {
-  const [theme, setTheme] = useState<Theme>(getInitialTheme);
-  const { t } = useTranslation("common");
+  const { resolvedTheme, setTheme } = useTheme()
+  const mounted = useIsClient()
 
-  useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
-    localStorage.setItem(STORAGE_KEY, theme);
-  }, [theme]);
+  const isDark = resolvedTheme === "dark"
+  const toggle = () => setTheme(isDark ? "light" : "dark")
 
-  const toggle = () => setTheme((t) => (t === "dark" ? "light" : "dark"));
-
-  const isDark = theme === "dark";
+  if (!mounted) {
+    return (
+      <button
+        type="button"
+        className="relative w-9 h-9 flex items-center justify-center rounded-full border border-border text-text-secondary transition-all duration-300"
+        aria-label="Toggle theme"
+      >
+        <span className="sr-only">Toggle theme</span>
+      </button>
+    )
+  }
 
   return (
     <button
       onClick={toggle}
       className="relative w-9 h-9 flex items-center justify-center rounded-full border border-border hover:border-border-hover text-text-secondary hover:text-text-primary transition-all duration-300"
-      aria-label={t("theme.switchTo", { mode: isDark ? t("theme.light") : t("theme.dark") })}
+      aria-label={`Switch to ${isDark ? "light" : "dark"} theme`}
     >
       <span
         className={`absolute transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] ${
@@ -53,7 +49,7 @@ const ThemeToggle: React.FC = () => {
         <FiSun className="w-4 h-4" />
       </span>
     </button>
-  );
-};
+  )
+}
 
-export default ThemeToggle;
+export default ThemeToggle

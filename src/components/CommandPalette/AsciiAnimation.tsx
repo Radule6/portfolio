@@ -1,4 +1,7 @@
-import { useState, useEffect, useRef } from "react";
+"use client";
+
+
+import { useState, useEffect, useMemo, useRef } from "react";
 
 interface AsciiAnimationProps {
   frames: string[];
@@ -123,12 +126,18 @@ export const LogoReveal: React.FC<LogoRevealProps> = ({
   const [fading, setFading] = useState(false);
   const rafRef = useRef<number>(0);
   const startRef = useRef(0);
-  const targetGrid = useRef(buildTargetGrid());
-  const targetCells = useRef(getTargetCells(targetGrid.current));
+  // Compute these once via useMemo (was useRef-of-render-value, which trips
+  // react-hooks/refs in React 19).
+  const targetGrid = useMemo(() => buildTargetGrid(), []);
+  const targetCells = useMemo(() => getTargetCells(targetGrid), [targetGrid]);
   const locked = useRef<Set<string>>(new Set());
 
+  // "Latest ref" pattern: track the latest onComplete prop so the timer in
+  // the effect below always calls the most recent callback without re-running.
   const onCompleteRef = useRef(onComplete);
-  onCompleteRef.current = onComplete;
+  useEffect(() => {
+    onCompleteRef.current = onComplete;
+  }, [onComplete]);
 
   const DECODE_MS = duration - 2200; // Noise + decode phase
   const HOLD_MS = duration - 600; // Clean logo hold before fade
@@ -146,8 +155,8 @@ export const LogoReveal: React.FC<LogoRevealProps> = ({
 
       const elapsed = time - startRef.current;
       const progress = Math.min(elapsed / DECODE_MS, 1);
-      const grid = targetGrid.current;
-      const cells = targetCells.current;
+      const grid = targetGrid;
+      const cells = targetCells;
 
       // Lock more target cells as progress advances
       const shouldLock = Math.floor(progress * cells.length);

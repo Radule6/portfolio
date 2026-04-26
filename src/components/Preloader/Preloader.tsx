@@ -1,3 +1,6 @@
+"use client";
+
+
 import React, { useEffect, useState } from "react";
 
 const LOGO_TEXT = "RADULE";
@@ -6,15 +9,18 @@ const LETTER_STAGGER = 60;
 const HOLD_DURATION = 1000;
 const EXIT_DURATION = 700;
 
-const Preloader: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
-  const [phase, setPhase] = useState<"enter" | "hold" | "exit">("enter");
+const Preloader: React.FC<{ onComplete?: () => void }> = ({ onComplete }) => {
+  const [phase, setPhase] = useState<"enter" | "hold" | "exit" | "done">("enter");
 
   useEffect(() => {
     const enterTime = LOGO_TEXT.length * LETTER_STAGGER + LOGO_ACCENT.length * LETTER_STAGGER + 400;
 
     const holdTimer = setTimeout(() => setPhase("hold"), enterTime);
     const exitTimer = setTimeout(() => setPhase("exit"), enterTime + HOLD_DURATION);
-    const doneTimer = setTimeout(onComplete, enterTime + HOLD_DURATION + EXIT_DURATION);
+    const doneTimer = setTimeout(() => {
+      setPhase("done");
+      onComplete?.();
+    }, enterTime + HOLD_DURATION + EXIT_DURATION);
 
     return () => {
       clearTimeout(holdTimer);
@@ -22,6 +28,8 @@ const Preloader: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
       clearTimeout(doneTimer);
     };
   }, [onComplete]);
+
+  if (phase === "done") return null;
 
   const allLetters = [...LOGO_TEXT.split(""), ...LOGO_ACCENT.split("")];
 

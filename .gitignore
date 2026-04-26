@@ -27,3 +27,13 @@ dist-ssr
 .cursorrules
 .cursor
 CLAUDE.md
+
+# Next.js
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo
+
+# Vercel
+.vercel
+.env*.local

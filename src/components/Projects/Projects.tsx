@@ -1,9 +1,14 @@
+"use client";
+
+
 import React, { useCallback, useEffect, useRef, useState, useMemo } from "react";
-import { useTranslation } from "react-i18next";
+import Image from "next/image";
+import Link from "next/link";
 import { FiExternalLink, FiGithub, FiX } from "react-icons/fi";
 
-interface Project {
+export interface Project {
   title: string;
+  slug?: string;
   description: string;
   tags: string[];
   color: string;
@@ -13,58 +18,16 @@ interface Project {
   repoUrl?: string;
   company?: string;
   role?: string;
+  hasBody?: boolean;
 }
 
-const Projects: React.FC = () => {
-  const { t, i18n } = useTranslation("projects");
+const Projects: React.FC<{ projects: Project[] }> = ({ projects }) => {
   const sectionRef = useRef<HTMLElement>(null);
   const [visible, setVisible] = useState(false);
   const [modalProject, setModalProject] = useState<Project | null>(null);
   const modalCloseRef = useRef<HTMLButtonElement>(null);
   const modalDialogRef = useRef<HTMLDivElement>(null);
   const returnFocusRef = useRef<HTMLElement | null>(null);
-
-  const projects: Project[] = useMemo(
-    () => [
-      {
-        title: t("items.exante.title"),
-        description: t("items.exante.description"),
-        tags: ["React", "FastAPI", "PostgreSQL", "AWS", "RAG"],
-        color: "#59FFCE",
-        company: t("items.exante.company"),
-        role: t("items.exante.role"),
-        image: "/projects/exante-data.png",
-        liveUrl: "https://ai.exantedata.com/",
-      },
-      {
-        title: t("items.marketreader.title"),
-        description: t("items.marketreader.description"),
-        tags: ["React", "TypeScript", "HighCharts", "Python"],
-        color: "#B7FF03",
-        company: t("items.marketreader.company"),
-        role: t("items.marketreader.role"),
-        image: "/projects/marketreader.png",
-        liveUrl: "https://app.marketreader.com/",
-      },
-      {
-        title: t("items.raduledev.title"),
-        description: t("items.raduledev.description"),
-        tags: ["React", "TypeScript", "Tailwind CSS", "Vite"],
-        color: "#59FFCE",
-        image: "/projects/radule-dev.png",
-        liveUrl: "https://radule.dev",
-        repoUrl: "https://github.com/Radule6/portfolio",
-      },
-      {
-        title: t("items.freelanceros.title"),
-        description: t("items.freelanceros.description"),
-        tags: ["Next.js", "Supabase", "Vercel"],
-        color: "#B7FF03",
-        status: "coming-soon" as const,
-      },
-    ],
-    [t, i18n.language]
-  );
 
   const featured = useMemo(() => projects.filter((p) => p.image), [projects]);
   const upcoming = useMemo(
@@ -135,7 +98,7 @@ const Projects: React.FC = () => {
       id="projects"
       ref={sectionRef}
       className="relative bg-surface px-6 sm:px-10 lg:px-16 py-20 sm:py-28 lg:py-36"
-      aria-label={t("sectionAria")}
+      aria-label="Selected projects"
     >
       {/* Section header */}
       <div className="mb-16 sm:mb-20 lg:mb-28">
@@ -145,14 +108,14 @@ const Projects: React.FC = () => {
           </span>
           <div className="h-px w-12 bg-border" aria-hidden="true" />
           <span className="font-body text-xs sm:text-sm tracking-[0.3em] uppercase text-text-secondary">
-            {t("sectionLabel")}
+            Selected Work
           </span>
         </div>
         <h2
           className="font-display text-4xl sm:text-5xl lg:text-7xl font-800 tracking-tight text-text-primary"
           style={stagger(0, 0.05)}
         >
-          {t("heading")}
+          Projects
         </h2>
       </div>
 
@@ -204,9 +167,20 @@ const Projects: React.FC = () => {
                       {String(idx + 1).padStart(2, "0")}
                     </span>
 
-                    <h3 className="font-display text-2xl sm:text-3xl lg:text-4xl font-700 text-text-primary mb-3 tracking-tight">
-                      {project.title}
-                    </h3>
+                    {project.hasBody && project.slug ? (
+                      <Link
+                        href={`/projects/${project.slug}`}
+                        className="group/title inline-block mb-3"
+                      >
+                        <h3 className="font-display text-2xl sm:text-3xl lg:text-4xl font-700 text-text-primary tracking-tight transition-colors duration-200 group-hover/title:text-accent-lime">
+                          {project.title}
+                        </h3>
+                      </Link>
+                    ) : (
+                      <h3 className="font-display text-2xl sm:text-3xl lg:text-4xl font-700 text-text-primary mb-3 tracking-tight">
+                        {project.title}
+                      </h3>
+                    )}
 
                     <p className="font-body text-sm sm:text-base text-text-secondary leading-relaxed mb-6 max-w-lg">
                       {project.description}
@@ -233,10 +207,10 @@ const Projects: React.FC = () => {
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex items-center gap-1.5 font-body text-xs sm:text-sm text-text-secondary hover:text-text-primary transition-colors duration-200"
-                          aria-label={project.company ? t("viewCompanyProduct", { company: project.company }) : t("viewLiveSite", { title: project.title })}
+                          aria-label={project.company ? `View ${project.company} product` : `View live site for ${project.title}`}
                         >
                           <FiExternalLink className="w-3.5 h-3.5" />
-                          {project.company ? t("viewProduct") : t("live")}
+                          {project.company ? "View Product" : "Live"}
                         </a>
                       )}
                       {project.repoUrl && (
@@ -245,10 +219,10 @@ const Projects: React.FC = () => {
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex items-center gap-1.5 font-body text-xs sm:text-sm text-text-secondary hover:text-text-primary transition-colors duration-200"
-                          aria-label={t("viewSource", { title: project.title })}
+                          aria-label={`View source code for ${project.title}`}
                         >
                           <FiGithub className="w-3.5 h-3.5" />
-                          {t("source")}
+                          Source
                         </a>
                       )}
                     </div>
@@ -262,14 +236,15 @@ const Projects: React.FC = () => {
                       type="button"
                       onClick={() => setModalProject(project)}
                       className="block w-full h-full cursor-zoom-in focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-lime"
-                      aria-label={t("viewScreenshot", { title: project.title })}
+                      aria-label={`View full screenshot of ${project.title}`}
                     >
-                      <div className="relative overflow-hidden h-full">
-                        <img
+                      <div className="relative overflow-hidden h-full min-h-[260px]">
+                        <Image
                           src={project.image}
-                          alt={t("screenshotAlt", { title: project.title })}
-                          className="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-[1.03]"
-                          loading="lazy"
+                          alt={`Screenshot of ${project.title}`}
+                          fill
+                          sizes="(min-width: 1024px) 55vw, 100vw"
+                          className="object-cover object-top transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                         />
                         {/* Gradient fade into text side */}
                         <div
@@ -323,7 +298,7 @@ const Projects: React.FC = () => {
                 <div className="relative z-10 flex flex-col justify-between p-6 sm:p-8 lg:p-10 lg:w-[45%]">
                   <div className="mb-6">
                     <span className="font-body text-[10px] tracking-[0.2em] uppercase whitespace-nowrap px-3 py-1 rounded-full border border-border bg-surface-hover text-text-muted">
-                      {t("comingSoon")}
+                      Coming Soon
                     </span>
                   </div>
 
@@ -371,7 +346,7 @@ const Projects: React.FC = () => {
                       </svg>
                     </div>
                     <span className="font-body text-xs tracking-[0.2em] uppercase text-text-muted">
-                      {t("inDevelopment")}
+                      In Development
                     </span>
                   </div>
                 </div>
@@ -387,7 +362,7 @@ const Projects: React.FC = () => {
           className="fixed inset-0 z-[80] flex items-center justify-center p-4 sm:p-8"
           role="dialog"
           aria-modal="true"
-          aria-label={t("screenshotAlt", { title: modalProject.title })}
+          aria-label={`Screenshot of ${modalProject.title}`}
         >
           {/* Backdrop */}
           <div
@@ -404,17 +379,21 @@ const Projects: React.FC = () => {
               type="button"
               onClick={closeModal}
               className="absolute -top-12 right-0 p-2 text-text-muted hover:text-text-primary transition-colors duration-200"
-              aria-label={t("closeModal")}
+              aria-label="Close modal"
             >
               <FiX className="w-6 h-6" />
             </button>
 
             {/* Image */}
             <div className="rounded-xl overflow-hidden border border-border">
-              <img
-                src={modalProject.image}
-                alt={t("screenshotAlt", { title: modalProject.title })}
+              <Image
+                src={modalProject.image!}
+                alt={`Screenshot of ${modalProject.title}`}
+                width={1905}
+                height={937}
+                sizes="(min-width: 1024px) 1024px, 100vw"
                 className="w-full h-auto block"
+                priority
               />
             </div>
 
@@ -431,7 +410,7 @@ const Projects: React.FC = () => {
                   className="flex items-center gap-2 font-body text-sm text-text-secondary hover:text-accent-lime transition-colors duration-200"
                 >
                   <FiExternalLink className="w-4 h-4" />
-                  {modalProject.company ? t("viewProduct") : t("visitSite")}
+                  {modalProject.company ? "View Product" : "Visit Site"}
                 </a>
               )}
             </div>

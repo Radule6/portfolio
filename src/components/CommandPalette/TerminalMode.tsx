@@ -1,5 +1,8 @@
+"use client";
+
+
 import { useState, useEffect, useRef, useCallback, useMemo, type ReactNode } from "react";
-import { useTranslation } from "react-i18next";
+import { useTheme } from "next-themes";
 import {
   createTerminalCommands,
   findCommand,
@@ -24,34 +27,28 @@ interface TerminalModeProps {
   onExit: () => void;
 }
 
+const welcomeMessage: ReactNode = (
+  <div className="space-y-1 animate-fade-in">
+    <p>
+      <span className="gradient-text font-bold">RADULE.DEV</span>{" "}
+      <span className="text-text-muted">Terminal v1.0</span>
+    </p>
+    <p className="text-text-muted">
+      {"Type "}
+      <span className="text-text-primary">help</span>
+      {" to see available commands."}
+    </p>
+  </div>
+);
+
 const TerminalMode: React.FC<TerminalModeProps> = ({ onExit }) => {
-  const { t } = useTranslation("terminal");
   const [ready, setReady] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const { resolvedTheme, setTheme } = useTheme();
 
-  const terminalCommands = useMemo(() => createTerminalCommands(t), [t]);
-
-  const welcomeMessage = useMemo(
-    () => (
-      <div className="space-y-1 animate-fade-in">
-        <p>
-          <span className="gradient-text font-bold">RADULE.DEV</span>{" "}
-          <span className="text-text-muted">{t("welcome.title")}</span>
-        </p>
-        <p className="text-text-muted">
-          {t("welcome.hint")
-            .split(/<cmd>|<\/cmd>/)
-            .map((part, i) =>
-              i === 1 ? (
-                <span key={i} className="text-text-primary">{part}</span>
-              ) : (
-                part
-              )
-            )}
-        </p>
-      </div>
-    ),
-    [t]
+  const terminalCommands = useMemo(
+    () => createTerminalCommands({ resolvedTheme, setTheme }),
+    [resolvedTheme, setTheme]
   );
 
   const [history, setHistory] = useState<TerminalEntry[]>([
@@ -61,37 +58,36 @@ const TerminalMode: React.FC<TerminalModeProps> = ({ onExit }) => {
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
 
-  const [suggestions, setSuggestions] = useState<TerminalCommandDef[]>([]);
   const [suggestionIndex, setSuggestionIndex] = useState(-1);
+  // When suggestions are explicitly dismissed (escape, accept), we store the
+  // exact input value they were dismissed for. As soon as the user types more
+  // (inputValue changes), the dismissal no longer matches and suggestions
+  // reappear naturally — without an effect.
+  const [suggestionsDismissedFor, setSuggestionsDismissedFor] = useState<string | null>(null);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLUListElement>(null);
   const nextId = useRef(1);
-
-  // Update welcome message when language changes
-  useEffect(() => {
-    setHistory((prev) => {
-      const updated = [...prev];
-      if (updated[0] && updated[0].command === null) {
-        updated[0] = { ...updated[0], output: welcomeMessage };
-      }
-      return updated;
-    });
-  }, [welcomeMessage]);
 
   /* ── Auto-focus input once preloader finishes ── */
   useEffect(() => {
     if (ready) requestAnimationFrame(() => inputRef.current?.focus());
   }, [ready]);
 
-  /* ── Recompute autocomplete suggestions (capped to visible max) ── */
+  /* ── Autocomplete suggestions (derived from input) ── */
   const MAX_SUGGESTIONS = 6;
-  useEffect(() => {
+  const computedSuggestions = useMemo(() => {
     const firstWord = inputValue.split(/\s+/)[0] ?? "";
-    const matches = filterTerminalCommands(firstWord, terminalCommands).slice(0, MAX_SUGGESTIONS);
-    setSuggestions(matches);
-    setSuggestionIndex(-1);
+    return filterTerminalCommands(firstWord, terminalCommands).slice(0, MAX_SUGGESTIONS);
   }, [inputValue, terminalCommands]);
+  const suggestions = suggestionsDismissedFor === inputValue ? [] : computedSuggestions;
+
+  /* ── Reset suggestion index when input changes (derived-state, prev-pattern) ── */
+  const [prevInputValue, setPrevInputValue] = useState(inputValue);
+  if (prevInputValue !== inputValue) {
+    setPrevInputValue(inputValue);
+    setSuggestionIndex(-1);
+  }
 
   /* ── Scroll active suggestion into view ── */
   useEffect(() => {
@@ -136,7 +132,7 @@ const TerminalMode: React.FC<TerminalModeProps> = ({ onExit }) => {
       }
 
       const cmd = findCommand(name, terminalCommands);
-      const output = cmd ? cmd.handler(args) : unknownCommand(name, t);
+      const output = cmd ? cmd.handler(args) : unknownCommand(name);
 
       const entry: TerminalEntry = {
         id: nextId.current++,
@@ -153,14 +149,15 @@ const TerminalMode: React.FC<TerminalModeProps> = ({ onExit }) => {
       setCommandHistory((prev) => [...prev, trimmed]);
       setHistoryIndex(-1);
     },
-    [onExit, terminalCommands, welcomeMessage, t]
+    [onExit, terminalCommands]
   );
 
   /* ── Accept a suggestion into the input ── */
   const acceptSuggestion = useCallback(
     (cmd: TerminalCommandDef) => {
-      setInputValue(cmd.name + " ");
-      setSuggestions([]);
+      const next = cmd.name + " ";
+      setInputValue(next);
+      setSuggestionsDismissedFor(next);
       setSuggestionIndex(-1);
       inputRef.current?.focus();
     },
@@ -195,7 +192,7 @@ const TerminalMode: React.FC<TerminalModeProps> = ({ onExit }) => {
       if (e.key === "Escape") {
         e.preventDefault();
         if (hasSuggestions) {
-          setSuggestions([]);
+          setSuggestionsDismissedFor(inputValue);
           setSuggestionIndex(-1);
         } else {
           onExit();
@@ -262,7 +259,7 @@ const TerminalMode: React.FC<TerminalModeProps> = ({ onExit }) => {
         ref={scrollRef}
         className="flex-1 overflow-y-auto px-5 py-4 space-y-4"
         aria-live="polite"
-        aria-label={t("output.aria")}
+        aria-label="Terminal output"
       >
         {history.map((entry) => (
           <div key={entry.id} className="animate-terminal-line-in">
@@ -288,7 +285,7 @@ const TerminalMode: React.FC<TerminalModeProps> = ({ onExit }) => {
           <ul
             ref={suggestionsRef}
             role="listbox"
-            aria-label={t("output.suggestionsAria")}
+            aria-label="Command suggestions"
             className="absolute bottom-full left-0 right-0 max-h-48 overflow-y-auto border-t border-border bg-surface"
           >
             {suggestions.map((cmd, i) => (
@@ -333,10 +330,10 @@ const TerminalMode: React.FC<TerminalModeProps> = ({ onExit }) => {
           }}
           onKeyDown={handleKeyDown}
           className="flex-1 bg-transparent text-text-primary text-sm outline-none caret-accent-lime"
-          placeholder={t("input.placeholder")}
+          placeholder="Type a command..."
           autoComplete="off"
           spellCheck={false}
-          aria-label={t("input.aria")}
+          aria-label="Terminal input"
         />
         </div>
       </div>

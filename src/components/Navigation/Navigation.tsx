@@ -1,24 +1,25 @@
+"use client";
+
+
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { useTranslation } from "react-i18next";
 import { FiArrowUpRight } from "react-icons/fi";
 import ThemeToggle from "../ThemeToggle/ThemeToggle";
 import { CommandPaletteTrigger } from "../CommandPalette/CommandPalette";
 
 const SCROLL_THRESHOLD = 50;
 
+const navLinks = [
+  { name: "Home", href: "#home" },
+  { name: "About", href: "#about" },
+  { name: "Projects", href: "#projects" },
+];
+
 const Navigation: React.FC = () => {
-  const { t } = useTranslation("common");
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const scrollRaf = useRef<number | null>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const firstLinkRef = useRef<HTMLAnchorElement>(null);
-
-  const navLinks = [
-    { name: t("nav.home"), href: "#home" },
-    { name: t("nav.about"), href: "#about" },
-    { name: t("nav.projects"), href: "#projects" },
-  ];
 
   useEffect(() => {
     const onScroll = () => {
@@ -93,10 +94,10 @@ const Navigation: React.FC = () => {
               ? "bg-nav-background backdrop-blur-xl border-border/20"
               : "bg-transparent border-transparent"
           }`}
-          aria-label={t("nav.mainNav")}
+          aria-label="Main navigation"
         >
           {/* Logo */}
-          <a href="#home" className="relative z-[70]" aria-label={t("nav.goHome")}>
+          <a href="#home" className="relative z-[70]" aria-label="Go to homepage">
             <span className="font-display font-800 text-xl sm:text-2xl lg:text-3xl tracking-tight text-text-primary">
               RADULE
               <span className="gradient-text">.DEV</span>
@@ -120,9 +121,9 @@ const Navigation: React.FC = () => {
               <a
                 href="#contact"
                 className="group flex items-center gap-2 font-body text-sm lg:text-base font-500 tracking-wide px-5 py-2 rounded-full border border-border hover:border-accent-lime text-text-primary hover:text-accent-lime transition-all duration-300"
-                aria-label={t("nav.startProjectAria")}
+                aria-label="Start a new project"
               >
-                {t("nav.startProject")}
+                Start Project
                 <FiArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200" aria-hidden="true" />
               </a>
             </li>
@@ -149,7 +150,7 @@ const Navigation: React.FC = () => {
             ref={menuButtonRef}
             aria-controls="mobile-nav-overlay"
             className="md:hidden relative z-[70] p-2 -mr-2 text-text-primary"
-            aria-label={mobileOpen ? t("nav.closeMenu") : t("nav.openMenu")}
+            aria-label={mobileOpen ? "Close menu" : "Open menu"}
             aria-expanded={mobileOpen}
             onClick={() => setMobileOpen((prev) => !prev)}
           >
@@ -183,7 +184,7 @@ const Navigation: React.FC = () => {
         id="mobile-nav-overlay"
         role="dialog"
         aria-modal="true"
-        aria-label={t("nav.mobileNav")}
+        aria-label="Mobile navigation"
         className={`fixed inset-0 z-[60] bg-surface md:hidden transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
           mobileOpen
             ? "opacity-100 pointer-events-auto"
@@ -199,7 +200,7 @@ const Navigation: React.FC = () => {
           aria-hidden="true"
         />
 
-        <nav aria-label={t("nav.mobileNav")} className="relative flex flex-col items-center justify-center h-full px-6">
+        <nav aria-label="Mobile navigation" className="relative flex flex-col items-center justify-center h-full px-6">
           <ul className="flex flex-col items-center gap-6 sm:gap-8">
             {navLinks.map((link, i) => (
               <li
@@ -245,9 +246,9 @@ const Navigation: React.FC = () => {
                 href="#contact"
                 onClick={closeMenu}
                 className="inline-flex items-center gap-2 font-body text-base sm:text-lg font-500 px-6 py-3 rounded-full border border-border text-text-primary hover:border-accent-lime hover:text-accent-lime active:border-accent-lime active:text-accent-lime transition-all duration-300"
-                aria-label={t("nav.startProjectAria")}
+                aria-label="Start a new project"
               >
-                {t("nav.startProject")}
+                Start Project
                 <FiArrowUpRight className="w-5 h-5" aria-hidden="true" />
               </a>
             </li>
