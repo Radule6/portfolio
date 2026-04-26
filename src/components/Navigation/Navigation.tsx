@@ -2,6 +2,7 @@
 
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
+import Link from "next/link";
 import { FiArrowUpRight } from "react-icons/fi";
 import ThemeToggle from "../ThemeToggle/ThemeToggle";
 import { CommandPaletteTrigger } from "../CommandPalette/CommandPalette";
@@ -98,35 +99,35 @@ const Navigation: React.FC = () => {
           aria-label="Main navigation"
         >
           {/* Logo */}
-          <a href="/#home" className="relative z-[70]" aria-label="Go to homepage">
+          <Link href="/#home" className="relative z-[70]" aria-label="Go to homepage">
             <span className="font-display font-800 text-xl sm:text-2xl lg:text-3xl tracking-tight text-text-primary">
               RADULE
               <span className="gradient-text">.DEV</span>
             </span>
-          </a>
+          </Link>
 
           {/* Desktop links */}
           <ul className="hidden md:flex items-center gap-8 lg:gap-10">
             {navLinks.map((link) => (
               <li key={link.href}>
-                <a
+                <Link
                   href={link.href}
                   className="relative group font-body text-sm lg:text-base font-500 tracking-wide uppercase text-text-secondary hover:text-text-primary transition-colors duration-300"
                 >
                   {link.name}
                   <span className="absolute -bottom-1 left-0 h-px w-0 group-hover:w-full bg-accent-lime transition-all duration-300" aria-hidden="true" />
-                </a>
+                </Link>
               </li>
             ))}
             <li>
-              <a
+              <Link
                 href="/#contact"
                 className="group flex items-center gap-2 font-body text-sm lg:text-base font-500 tracking-wide px-5 py-2 rounded-full border border-border hover:border-accent-lime text-text-primary hover:text-accent-lime transition-all duration-300"
                 aria-label="Start a new project"
               >
                 Start Project
                 <FiArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200" aria-hidden="true" />
-              </a>
+              </Link>
             </li>
             <li className="hidden lg:block">
               <CommandPaletteTrigger
@@ -213,14 +214,14 @@ const Navigation: React.FC = () => {
                   transition: `opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1) ${0.12 + i * 0.07}s, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1) ${0.12 + i * 0.07}s`,
                 }}
               >
-                <a
+                <Link
                   href={link.href}
                   ref={i === 0 ? firstLinkRef : undefined}
                   onClick={closeMenu}
                   className="block font-display text-2xl sm:text-3xl font-800 text-text-primary tracking-tight hover:text-accent-lime active:text-accent-lime transition-colors duration-200 uppercase"
                 >
                   {link.name}
-                </a>
+                </Link>
               </li>
             ))}
 
@@ -243,7 +244,7 @@ const Navigation: React.FC = () => {
                 transition: `opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1) ${0.12 + (navLinks.length + 1) * 0.07}s, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1) ${0.12 + (navLinks.length + 1) * 0.07}s`,
               }}
             >
-              <a
+              <Link
                 href="/#contact"
                 onClick={closeMenu}
                 className="inline-flex items-center gap-2 font-body text-base sm:text-lg font-500 px-6 py-3 rounded-full border border-border text-text-primary hover:border-accent-lime hover:text-accent-lime active:border-accent-lime active:text-accent-lime transition-all duration-300"
@@ -251,7 +252,7 @@ const Navigation: React.FC = () => {
               >
                 Start Project
                 <FiArrowUpRight className="w-5 h-5" aria-hidden="true" />
-              </a>
+              </Link>
             </li>
 
             <li
