@@ -37,3 +37,6 @@ next-env.d.ts
 # Vercel
 .vercel
 .env*.local
+
+# Superpowers specs/plans — local-only working docs
+docs/superpowers/

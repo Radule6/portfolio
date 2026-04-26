@@ -5,6 +5,7 @@ export const revalidatePost: CollectionAfterChangeHook = ({ doc, previousDoc, re
   if (context?.disableRevalidate) return doc
   revalidatePath("/blog")
   revalidatePath("/feed.xml")
+  revalidatePath("/sitemap.xml")
   if (doc?.slug) revalidatePath(`/blog/${doc.slug}`)
   if (previousDoc?.slug && previousDoc.slug !== doc?.slug) {
     revalidatePath(`/blog/${previousDoc.slug}`)
@@ -16,6 +17,7 @@ export const revalidatePostDelete: CollectionAfterDeleteHook = ({ doc, req: { co
   if (context?.disableRevalidate) return doc
   revalidatePath("/blog")
   revalidatePath("/feed.xml")
+  revalidatePath("/sitemap.xml")
   if (doc?.slug) revalidatePath(`/blog/${doc.slug}`)
   return doc
 }

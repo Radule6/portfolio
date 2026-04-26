@@ -9,9 +9,10 @@ import { CommandPaletteTrigger } from "../CommandPalette/CommandPalette";
 const SCROLL_THRESHOLD = 50;
 
 const navLinks = [
-  { name: "Home", href: "#home" },
-  { name: "About", href: "#about" },
-  { name: "Projects", href: "#projects" },
+  { name: "Home", href: "/#home" },
+  { name: "About", href: "/#about" },
+  { name: "Projects", href: "/#projects" },
+  { name: "Blog", href: "/blog" },
 ];
 
 const Navigation: React.FC = () => {
@@ -97,7 +98,7 @@ const Navigation: React.FC = () => {
           aria-label="Main navigation"
         >
           {/* Logo */}
-          <a href="#home" className="relative z-[70]" aria-label="Go to homepage">
+          <a href="/#home" className="relative z-[70]" aria-label="Go to homepage">
             <span className="font-display font-800 text-xl sm:text-2xl lg:text-3xl tracking-tight text-text-primary">
               RADULE
               <span className="gradient-text">.DEV</span>
@@ -119,7 +120,7 @@ const Navigation: React.FC = () => {
             ))}
             <li>
               <a
-                href="#contact"
+                href="/#contact"
                 className="group flex items-center gap-2 font-body text-sm lg:text-base font-500 tracking-wide px-5 py-2 rounded-full border border-border hover:border-accent-lime text-text-primary hover:text-accent-lime transition-all duration-300"
                 aria-label="Start a new project"
               >
@@ -243,7 +244,7 @@ const Navigation: React.FC = () => {
               }}
             >
               <a
-                href="#contact"
+                href="/#contact"
                 onClick={closeMenu}
                 className="inline-flex items-center gap-2 font-body text-base sm:text-lg font-500 px-6 py-3 rounded-full border border-border text-text-primary hover:border-accent-lime hover:text-accent-lime active:border-accent-lime active:text-accent-lime transition-all duration-300"
                 aria-label="Start a new project"
