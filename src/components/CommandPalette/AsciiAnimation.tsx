@@ -204,7 +204,7 @@ export const LogoReveal: React.FC<LogoRevealProps> = ({
 
     rafRef.current = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(rafRef.current);
-  }, [DECODE_MS, HOLD_MS]);
+  }, [DECODE_MS, HOLD_MS, targetCells, targetGrid]);
 
   useEffect(() => {
     const fadeTimer = setTimeout(() => setFading(true), duration - 600);

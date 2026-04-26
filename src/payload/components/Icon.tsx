@@ -2,9 +2,11 @@
 // (public/favicon.png) so the admin matches the public brand exactly.
 // Server component.
 
+import Image from "next/image"
+
 export default function Icon() {
   return (
-    <img
+    <Image
       src="/favicon.png"
       alt="RADULE.DEV"
       width={28}

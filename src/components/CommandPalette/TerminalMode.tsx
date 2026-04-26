@@ -80,7 +80,10 @@ const TerminalMode: React.FC<TerminalModeProps> = ({ onExit }) => {
     const firstWord = inputValue.split(/\s+/)[0] ?? "";
     return filterTerminalCommands(firstWord, terminalCommands).slice(0, MAX_SUGGESTIONS);
   }, [inputValue, terminalCommands]);
-  const suggestions = suggestionsDismissedFor === inputValue ? [] : computedSuggestions;
+  const suggestions = useMemo(
+    () => (suggestionsDismissedFor === inputValue ? [] : computedSuggestions),
+    [suggestionsDismissedFor, inputValue, computedSuggestions],
+  );
 
   /* ── Reset suggestion index when input changes (derived-state, prev-pattern) ── */
   const [prevInputValue, setPrevInputValue] = useState(inputValue);
