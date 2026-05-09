@@ -21,6 +21,7 @@ import DecisionsList from "@/components/CaseStudy/DecisionsList"
 import ScreenshotsGallery from "@/components/CaseStudy/ScreenshotsGallery"
 import ResultsList from "@/components/CaseStudy/ResultsList"
 import RelatedProjects from "@/components/CaseStudy/RelatedProjects"
+import InstantScrollToTop from "@/components/CaseStudy/InstantScrollToTop"
 import { FiExternalLink, FiGithub, FiArrowLeft } from "react-icons/fi"
 
 type Params = { slug: string }
@@ -145,6 +146,7 @@ export default async function ProjectPage({ params }: { params: Promise<Params> 
 
   return (
     <div className="bg-surface min-h-screen">
+      <InstantScrollToTop />
       <Navigation />
       <ReadingProgress color={project.accentColor} />
       <main className="px-6 sm:px-10 lg:px-16 py-20 sm:py-28 max-w-7xl mx-auto">
