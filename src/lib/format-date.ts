@@ -6,3 +6,8 @@ export function formatPostDate(iso: string | Date): string {
     day: "numeric",
   })
 }
+
+export function formatProjectDate(iso: string | Date): string {
+  const d = typeof iso === "string" ? new Date(iso) : iso
+  return String(d.getUTCFullYear())
+}
