@@ -3,8 +3,8 @@ import * as React from "react"
 import { vi } from "vitest"
 
 vi.mock("next/image", () => ({
-  default: ({ src, alt, priority, fill, sizes, placeholder, blurDataURL, ...rest }: Record<string, unknown>) =>
-    React.createElement("img", { src, alt, ...rest }),
+  default: ({ src, alt }: Record<string, unknown>) =>
+    React.createElement("img", { src, alt }),
 }))
 
 vi.mock("next/link", () => ({
