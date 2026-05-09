@@ -1,9 +1,7 @@
-import { describe, it, expect, afterEach } from "vitest"
-import { render, screen, fireEvent, cleanup } from "@testing-library/react"
+import { describe, it, expect } from "vitest"
+import { render, screen, fireEvent } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import ScreenshotsGallery from "@/components/CaseStudy/ScreenshotsGallery"
-
-afterEach(cleanup)
 
 const item = (label: string, caption?: string) => ({
   image: { url: `https://example.com/${label}.png`, alt: `${label} alt`, width: 800, height: 400 },

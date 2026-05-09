@@ -1,6 +1,9 @@
 import "@testing-library/jest-dom/vitest"
 import * as React from "react"
-import { vi } from "vitest"
+import { afterEach, vi } from "vitest"
+import { cleanup } from "@testing-library/react"
+
+afterEach(cleanup)
 
 vi.mock("next/image", () => ({
   default: ({ src, alt }: Record<string, unknown>) =>

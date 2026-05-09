@@ -1,8 +1,6 @@
-import { describe, it, expect, afterEach } from "vitest"
-import { render, screen, cleanup } from "@testing-library/react"
+import { describe, it, expect } from "vitest"
+import { render, screen } from "@testing-library/react"
 import ProjectHero from "@/components/CaseStudy/ProjectHero"
-
-afterEach(cleanup)
 
 const minimal = {
   title: "Test Project",

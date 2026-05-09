@@ -27,18 +27,20 @@ export default function ScreenshotsGallery({ items, projectTitle }: ScreenshotsG
     returnFocusRef.current = document.activeElement as HTMLElement
     const previousOverflow = document.body.style.overflow
     document.body.style.overflow = "hidden"
-    requestAnimationFrame(() => closeRef.current?.focus())
+    const focusFrame = requestAnimationFrame(() => closeRef.current?.focus())
+
+    const focusable = Array.from(
+      dialogRef.current?.querySelectorAll<HTMLElement>(
+        'a[href], button, [tabindex]:not([tabindex="-1"])'
+      ) ?? []
+    )
 
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         close()
         return
       }
-      if (e.key === "Tab" && dialogRef.current) {
-        const focusable = dialogRef.current.querySelectorAll<HTMLElement>(
-          'a[href], button, [tabindex]:not([tabindex="-1"])'
-        )
-        if (focusable.length === 0) return
+      if (e.key === "Tab" && focusable.length > 0) {
         const first = focusable[0]
         const last = focusable[focusable.length - 1]
         if (e.shiftKey && document.activeElement === first) {
@@ -52,6 +54,7 @@ export default function ScreenshotsGallery({ items, projectTitle }: ScreenshotsG
     }
     window.addEventListener("keydown", onKey)
     return () => {
+      cancelAnimationFrame(focusFrame)
       document.body.style.overflow = previousOverflow
       window.removeEventListener("keydown", onKey)
       returnFocusRef.current?.focus()

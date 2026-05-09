@@ -1,4 +1,5 @@
 import Image from "next/image"
+import { accentStyle } from "@/lib/accent-style"
 import { formatProjectDate } from "@/lib/format-date"
 
 export type ProjectHeroProps = {
@@ -26,10 +27,7 @@ export default function ProjectHero({
   const lifecycleLabel = lifecycle === "live" ? "Live" : "Archived"
 
   return (
-    <header
-      style={{ ["--accent" as string]: accentColor }}
-      className="mb-12"
-    >
+    <header style={accentStyle(accentColor)} className="mb-12">
       {eyebrow && (
         <span
           data-testid="hero-eyebrow"

@@ -1,8 +1,6 @@
-import { describe, it, expect, afterEach } from "vitest"
-import { render, screen, cleanup } from "@testing-library/react"
+import { describe, it, expect } from "vitest"
+import { render, screen } from "@testing-library/react"
 import RelatedProjects from "@/components/CaseStudy/RelatedProjects"
-
-afterEach(cleanup)
 
 const make = (slug: string, title: string) => ({
   slug,

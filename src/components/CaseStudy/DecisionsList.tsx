@@ -1,5 +1,6 @@
 import type { SerializedEditorState } from "@payloadcms/richtext-lexical/lexical"
 import RichText from "@/components/RichText/RichText"
+import { accentStyle } from "@/lib/accent-style"
 
 export type DecisionsListProps = {
   decisions: { title: string; rationale: SerializedEditorState }[] | null | undefined
@@ -9,11 +10,7 @@ export type DecisionsListProps = {
 export default function DecisionsList({ decisions, accentColor }: DecisionsListProps) {
   if (!decisions || decisions.length === 0) return null
   return (
-    <ul
-      role="list"
-      style={{ ["--accent" as string]: accentColor }}
-      className="space-y-8 my-12"
-    >
+    <ul role="list" style={accentStyle(accentColor)} className="space-y-8 my-12">
       {decisions.map((d, i) => (
         <li key={i} className="relative pl-6">
           <span

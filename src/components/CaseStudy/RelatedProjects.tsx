@@ -1,5 +1,6 @@
 import Image from "next/image"
 import Link from "next/link"
+import { accentStyle } from "@/lib/accent-style"
 
 export type RelatedProjectsProps = {
   projects: Array<{
@@ -20,7 +21,7 @@ export default function RelatedProjects({ projects }: RelatedProjectsProps) {
           <Link
             href={`/projects/${p.slug}`}
             className="group block rounded-xl border border-border bg-surface-raised overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-lime relative"
-            style={{ ["--accent" as string]: p.accentColor }}
+            style={accentStyle(p.accentColor)}
           >
             <span
               aria-hidden="true"

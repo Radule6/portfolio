@@ -1,3 +1,5 @@
+import { accentStyle } from "@/lib/accent-style"
+
 export type ResultsListProps = {
   results: { label: string; value: string }[] | null | undefined
   accentColor: string
@@ -7,7 +9,7 @@ export default function ResultsList({ results, accentColor }: ResultsListProps) 
   if (!results || results.length === 0) return null
   return (
     <dl
-      style={{ ["--accent" as string]: accentColor }}
+      style={accentStyle(accentColor)}
       className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 my-12"
     >
       {results.map((r, i) => (
