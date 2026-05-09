@@ -1,6 +1,7 @@
 import { getPayload } from "payload"
 import config from "@payload-config"
 import Projects, { type Project } from "./Projects"
+import { hasContent } from "@/lib/lexical-utils"
 
 export default async function ProjectsServer() {
   const payload = await getPayload({ config })
@@ -29,7 +30,7 @@ export default async function ProjectsServer() {
       repoUrl: doc.repoUrl ?? undefined,
       company: doc.company ?? undefined,
       role: doc.role ?? undefined,
-      hasBody: Boolean(doc.body),
+      hasBody: hasContent(doc.problem) || hasContent(doc.approach),
     }
   })
 
