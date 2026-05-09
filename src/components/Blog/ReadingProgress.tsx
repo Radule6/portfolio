@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react"
 
-export default function ReadingProgress() {
+export default function ReadingProgress({ color }: { color?: string } = {}) {
   const barRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -39,15 +39,16 @@ export default function ReadingProgress() {
     }
   }, [])
 
+  const background = color
+    ? color
+    : "linear-gradient(to right, #59FFCE, #B7FF03, #FFFF00)"
+
   return (
     <div
       ref={barRef}
       aria-hidden="true"
       className="fixed top-0 left-0 right-0 h-[2px] z-[80] origin-left"
-      style={{
-        background: "linear-gradient(to right, #59FFCE, #B7FF03, #FFFF00)",
-        transform: "scaleX(0)",
-      }}
+      style={{ background, transform: "scaleX(0)" }}
     />
   )
 }
