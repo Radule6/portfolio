@@ -174,8 +174,14 @@ export interface Project {
   id: number;
   title: string;
   slug: string;
+  /**
+   * Doubles as homepage card subhead, case-study hero tagline, and SEO description.
+   */
   description: string;
-  body?: {
+  /**
+   * What problem does this project solve? Renders as the Problem section of the case study.
+   */
+  problem?: {
     root: {
       type: string;
       children: {
@@ -190,6 +196,65 @@ export interface Project {
     };
     [k: string]: unknown;
   } | null;
+  /**
+   * How was it built? Renders as the Approach section of the case study.
+   */
+  approach?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Optional architecture diagram, rendered above the Approach text.
+   */
+  diagram?: (number | null) | Media;
+  /**
+   * Key technical decisions, rendered as a Q-and-A list.
+   */
+  decisions?:
+    | {
+        title: string;
+        rationale: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Outcomes / metrics, rendered as metric cards.
+   */
+  results?:
+    | {
+        label: string;
+        /**
+         * Encode unit inline, e.g. "150ms p99" or "-40%".
+         */
+        value: string;
+        id?: string | null;
+      }[]
+    | null;
   tags?:
     | {
         label: string;
@@ -204,6 +269,7 @@ export interface Project {
   gallery?:
     | {
         image: number | Media;
+        caption?: string | null;
         id?: string | null;
       }[]
     | null;
@@ -212,11 +278,23 @@ export interface Project {
   company?: string | null;
   role?: string | null;
   status: 'published' | 'coming-soon' | 'draft';
+  lifecycle: 'live' | 'archived';
   /**
    * Manual sort on homepage (lower first)
    */
   order?: number | null;
+  /**
+   * When the project was built (year shown in case-study hero).
+   */
+  dateBuilt?: string | null;
+  /**
+   * When this case-study page was published.
+   */
   publishedAt?: string | null;
+  /**
+   * Pick up to 3 related projects to show at the bottom of this page.
+   */
+  relatedProjects?: (number | Project)[] | null;
   seo?: {
     title?: string | null;
     description?: string | null;
@@ -407,7 +485,23 @@ export interface ProjectsSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
   description?: T;
-  body?: T;
+  problem?: T;
+  approach?: T;
+  diagram?: T;
+  decisions?:
+    | T
+    | {
+        title?: T;
+        rationale?: T;
+        id?: T;
+      };
+  results?:
+    | T
+    | {
+        label?: T;
+        value?: T;
+        id?: T;
+      };
   tags?:
     | T
     | {
@@ -420,6 +514,7 @@ export interface ProjectsSelect<T extends boolean = true> {
     | T
     | {
         image?: T;
+        caption?: T;
         id?: T;
       };
   liveUrl?: T;
@@ -427,8 +522,11 @@ export interface ProjectsSelect<T extends boolean = true> {
   company?: T;
   role?: T;
   status?: T;
+  lifecycle?: T;
   order?: T;
+  dateBuilt?: T;
   publishedAt?: T;
+  relatedProjects?: T;
   seo?:
     | T
     | {

@@ -7,7 +7,7 @@ export const Projects: CollectionConfig = {
   labels: { singular: "Project", plural: "Projects" },
   admin: {
     useAsTitle: "title",
-    defaultColumns: ["title", "company", "status", "order", "publishedAt"],
+    defaultColumns: ["title", "company", "lifecycle", "status", "order", "publishedAt"],
     group: "Content",
     listSearchableFields: ["title", "slug", "company"],
   },
@@ -27,8 +27,69 @@ export const Projects: CollectionConfig = {
       index: true,
       admin: { position: "sidebar" },
     },
-    { name: "description", type: "textarea", required: true },
-    { name: "body", type: "richText" },
+    {
+      name: "description",
+      type: "textarea",
+      required: true,
+      admin: {
+        description:
+          "Doubles as homepage card subhead, case-study hero tagline, and SEO description.",
+      },
+    },
+    {
+      name: "problem",
+      type: "richText",
+      admin: {
+        description:
+          "What problem does this project solve? Renders as the Problem section of the case study.",
+      },
+    },
+    {
+      name: "approach",
+      type: "richText",
+      admin: {
+        description:
+          "How was it built? Renders as the Approach section of the case study.",
+      },
+    },
+    {
+      name: "diagram",
+      type: "upload",
+      relationTo: "media",
+      admin: {
+        description:
+          "Optional architecture diagram, rendered above the Approach text.",
+      },
+    },
+    {
+      name: "decisions",
+      type: "array",
+      admin: {
+        description: "Key technical decisions, rendered as a Q-and-A list.",
+      },
+      fields: [
+        { name: "title", type: "text", required: true },
+        { name: "rationale", type: "richText", required: true },
+      ],
+    },
+    {
+      name: "results",
+      type: "array",
+      admin: {
+        description: "Outcomes / metrics, rendered as metric cards.",
+      },
+      fields: [
+        { name: "label", type: "text", required: true },
+        {
+          name: "value",
+          type: "text",
+          required: true,
+          admin: {
+            description: "Encode unit inline, e.g. \"150ms p99\" or \"-40%\".",
+          },
+        },
+      ],
+    },
     {
       name: "tags",
       type: "array",
@@ -45,7 +106,10 @@ export const Projects: CollectionConfig = {
     {
       name: "gallery",
       type: "array",
-      fields: [{ name: "image", type: "upload", relationTo: "media", required: true }],
+      fields: [
+        { name: "image", type: "upload", relationTo: "media", required: true },
+        { name: "caption", type: "text" },
+      ],
     },
     { name: "liveUrl", type: "text" },
     { name: "repoUrl", type: "text" },
@@ -63,6 +127,16 @@ export const Projects: CollectionConfig = {
       ],
     },
     {
+      name: "lifecycle",
+      type: "select",
+      required: true,
+      defaultValue: "live",
+      options: [
+        { label: "Live", value: "live" },
+        { label: "Archived", value: "archived" },
+      ],
+    },
+    {
       name: "order",
       type: "number",
       defaultValue: 0,
@@ -71,7 +145,34 @@ export const Projects: CollectionConfig = {
         description: "Manual sort on homepage (lower first)",
       },
     },
-    { name: "publishedAt", type: "date", admin: { position: "sidebar" } },
+    {
+      name: "dateBuilt",
+      type: "date",
+      admin: {
+        position: "sidebar",
+        description: "When the project was built (year shown in case-study hero).",
+      },
+    },
+    {
+      name: "publishedAt",
+      type: "date",
+      admin: {
+        position: "sidebar",
+        description: "When this case-study page was published.",
+      },
+    },
+    {
+      name: "relatedProjects",
+      type: "relationship",
+      relationTo: "projects",
+      hasMany: true,
+      maxRows: 3,
+      filterOptions: ({ id }: { id: string | number | undefined }) =>
+        id === undefined ? true : { id: { not_equals: id } },
+      admin: {
+        description: "Pick up to 3 related projects to show at the bottom of this page.",
+      },
+    },
     {
       name: "seo",
       type: "group",
