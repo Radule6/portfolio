@@ -2,8 +2,38 @@
 //   DATABASE_URL="$DATABASE_URL_DIRECT" npx tsx scripts/seed-projects.ts
 //
 // Idempotent: re-running skips projects that already exist (matched by slug).
+// To refresh seed content with new schema fields, delete the project rows in
+// /admin first and re-run.
 import { getPayload } from "payload"
 import config from "../src/payload.config"
+
+const placeholderLexical = (paragraphs: string[]) => ({
+  root: {
+    type: "root" as const,
+    direction: "ltr" as const,
+    format: "" as const,
+    indent: 0,
+    version: 1,
+    children: paragraphs.map((text) => ({
+      type: "paragraph" as const,
+      direction: "ltr" as const,
+      format: "" as const,
+      indent: 0,
+      version: 1,
+      children: [
+        {
+          type: "text" as const,
+          text,
+          version: 1,
+          format: 0,
+          mode: "normal" as const,
+          style: "",
+          detail: 0,
+        },
+      ],
+    })),
+  },
+})
 
 const projects = [
   {
@@ -11,6 +41,12 @@ const projects = [
     slug: "exante-data-ai-search",
     description:
       "Built a RAG-based search system that enables institutional clients to query proprietary financial datasets using natural language. Responsible for full-stack development across the React frontend, Python/FastAPI backend, PostgreSQL, and AWS infrastructure.",
+    problem: placeholderLexical([
+      "Phase 1 placeholder. Real case-study copy will land in a separate content task.",
+    ]),
+    approach: placeholderLexical([
+      "Phase 1 placeholder. Real case-study copy will land in a separate content task.",
+    ]),
     tags: [
       { label: "React" },
       { label: "FastAPI" },
@@ -23,6 +59,8 @@ const projects = [
     role: "Full Stack Engineer",
     liveUrl: "https://ai.exantedata.com/",
     status: "published" as const,
+    lifecycle: "live" as const,
+    dateBuilt: "2024-09-01",
     order: 1,
   },
   {
@@ -41,6 +79,8 @@ const projects = [
     role: "Software Engineer",
     liveUrl: "https://app.marketreader.com/",
     status: "published" as const,
+    lifecycle: "live" as const,
+    dateBuilt: "2023-04-01",
     order: 2,
   },
   {
@@ -59,6 +99,8 @@ const projects = [
     liveUrl: "https://radule.dev",
     repoUrl: "https://github.com/Radule6/portfolio",
     status: "published" as const,
+    lifecycle: "live" as const,
+    dateBuilt: "2026-04-01",
     order: 3,
   },
 ]
