@@ -61,4 +61,13 @@ describe("ScreenshotsGallery", () => {
     fireEvent.keyDown(window, { key: "Escape" })
     expect(screen.queryByRole("dialog")).toBeNull()
   })
+
+  it("moves focus to the close button when lightbox opens (focus trap)", async () => {
+    const user = userEvent.setup()
+    render(<ScreenshotsGallery projectTitle="X" items={[item("a")]} />)
+    await user.click(screen.getByLabelText(/view full screenshot/i))
+    // requestAnimationFrame schedules the focus call; flush via setTimeout.
+    await new Promise((r) => setTimeout(r, 20))
+    expect(document.activeElement).toBe(screen.getByLabelText(/close screenshot/i))
+  })
 })
