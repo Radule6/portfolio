@@ -80,6 +80,12 @@ const projects = [
     slug: "marketreader-dashboard",
     description:
       "Built the platform's interactive charting system from scratch, visualizing thousands of financial data points in real-time. Owned end-to-end development of the embeddable widget system that expanded platform reach to external sites.",
+    problem: placeholderLexical([
+      "Phase 1 placeholder. Real case-study copy will land in a separate content task.",
+    ]),
+    approach: placeholderLexical([
+      "Phase 1 placeholder. Real case-study copy will land in a separate content task.",
+    ]),
     tags: [
       { label: "React" },
       { label: "TypeScript" },
@@ -100,6 +106,12 @@ const projects = [
     slug: "radule-dev",
     description:
       "The site you're looking at. Custom portfolio built from scratch with a focus on performance, animation, and accessibility.",
+    problem: placeholderLexical([
+      "Phase 1 placeholder. Real case-study copy will land in a separate content task.",
+    ]),
+    approach: placeholderLexical([
+      "Phase 1 placeholder. Real case-study copy will land in a separate content task.",
+    ]),
     tags: [
       { label: "React" },
       { label: "Next.js" },
@@ -128,7 +140,22 @@ async function seed() {
     })
 
     if (existing.docs.length > 0) {
-      console.log(`✓ ${project.slug} (already exists, skipping)`)
+      const current = existing.docs[0]
+      const patch: Record<string, unknown> = {}
+      if (!current.problem && project.problem) patch.problem = project.problem
+      if (!current.approach && project.approach) patch.approach = project.approach
+      if (!current.dateBuilt && project.dateBuilt) patch.dateBuilt = project.dateBuilt
+      if (Object.keys(patch).length === 0) {
+        console.log(`✓ ${project.slug} (already exists, no patch needed)`)
+      } else {
+        await payload.update({
+          collection: "projects",
+          id: current.id,
+          data: patch,
+          context: { disableRevalidate: true },
+        })
+        console.log(`~ ${project.slug} (patched: ${Object.keys(patch).join(", ")})`)
+      }
       continue
     }
 
