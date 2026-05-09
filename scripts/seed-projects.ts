@@ -1,11 +1,23 @@
 // Run with:
+//   npx tsx scripts/seed-projects.ts
+//
+// Loads env via @next/env (same loader Next.js uses), so .env.local is picked
+// up automatically. If you want to override DATABASE_URL with the direct
+// connection string, prefix the command:
 //   DATABASE_URL="$DATABASE_URL_DIRECT" npx tsx scripts/seed-projects.ts
 //
 // Idempotent: re-running skips projects that already exist (matched by slug).
 // To refresh seed content with new schema fields, delete the project rows in
 // /admin first and re-run.
-import { getPayload } from "payload"
-import config from "../src/payload.config"
+import nextEnv from "@next/env"
+
+const { loadEnvConfig } = nextEnv
+loadEnvConfig(process.cwd())
+
+// Dynamic imports — must run AFTER env is loaded because payload.config.ts
+// reads process.env.PAYLOAD_SECRET at module load time.
+const { getPayload } = await import("payload")
+const config = (await import("../src/payload.config")).default
 
 const placeholderLexical = (paragraphs: string[]) => ({
   root: {
